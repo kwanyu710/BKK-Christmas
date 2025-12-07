@@ -60,14 +60,16 @@
         .nav-btn.active { color: #C6A568; }
         .nav-btn.active i { transform: scale(1.1); transition: 0.2s; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .edit-spot-btn { opacity: 0.3; transition: 0.2s; }
         .timeline-item:hover .edit-spot-btn { opacity: 1; }
         
-        /* Fix for Flash Issue: Manual Toggle classes */
-        .desc-content { display: none; }
-        .desc-content.show { display: block; animation: fadeIn 0.3s ease; }
+        /* EXPAND / COLLAPSE ANIMATION */
+        .desc-content { display: none; overflow: hidden; }
+        .desc-content.show { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.rotate { transform: rotate(180deg); }
     </style>
@@ -76,6 +78,11 @@
 
 <div class="app-container">
     
+    <div class="fixed right-5 bottom-24 z-[100] flex flex-col gap-3">
+        <button onclick="syncToCloud('download')" class="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition hover:text-jp-blue"><i class="fas fa-cloud-download-alt"></i></button>
+        <button onclick="syncToCloud('upload')" class="w-10 h-10 rounded-full bg-jp-text shadow-lg border border-jp-text flex items-center justify-center text-white active:scale-90 transition hover:bg-gray-700"><i class="fas fa-cloud-upload-alt"></i></button>
+    </div>
+
     <header class="sticky top-0 z-50 bg-[#F9F8F4]/95 backdrop-blur-sm px-5 py-4 flex justify-between items-end border-b border-gray-100">
         <div>
             <p class="text-[10px] text-gray-400 tracking-widest mb-1">DEC 23 - DEC 28</p>
@@ -291,11 +298,6 @@
         </div>
     </div>
     
-    <div class="fixed right-5 bottom-24 z-50 flex flex-col gap-3">
-        <button onclick="syncToCloud('download')" class="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition hover:text-jp-blue"><i class="fas fa-cloud-download-alt"></i></button>
-        <button onclick="syncToCloud('upload')" class="w-10 h-10 rounded-full bg-jp-text shadow-lg border border-jp-text flex items-center justify-center text-white active:scale-90 transition hover:bg-gray-700"><i class="fas fa-cloud-upload-alt"></i></button>
-    </div>
-
     <nav class="fixed bottom-6 left-5 right-5 h-16 bg-white/95 backdrop-blur rounded-2xl flex justify-around items-center shadow-gold z-50 border border-gray-100">
         <button onclick="switchTab('tab-home')" class="nav-btn active flex flex-col items-center gap-1 text-gray-400" data-target="tab-home"><i class="fas fa-home text-lg"></i><span class="text-[10px]">首頁</span></button>
         <button onclick="switchTab('tab-itinerary')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-itinerary"><i class="fas fa-map-marked-alt text-lg"></i><span class="text-[10px]">行程</span></button>
@@ -335,7 +337,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V15) ---
+    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V16) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -458,8 +460,9 @@
         if(!d.spots || d.spots.length === 0) { c.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">點擊 + 新增行程</div>`; return; }
         
         c.innerHTML = d.spots.map((s, idx) => {
-            // Updated to use Button + Div instead of Details/Summary to prevent conflict with Sortable.js
-            const deepContent = s.deep_desc ? `
+            // Check if deep_desc exists
+            const hasDesc = s.deep_desc && s.deep_desc.length > 0;
+            const deepContent = hasDesc ? `
                 <div class="mt-2 border-t border-gray-100 pt-2">
                     <button onclick="toggleDesc(this)" class="w-full text-left flex items-center gap-2 cursor-pointer text-[10px] font-bold text-jp-accent outline-none">
                         <span class="bg-mag-paper px-2 py-1 rounded border border-amber-100 hover:bg-amber-50 transition"><i class="fas fa-book-open mr-1"></i>景點故事</span>
@@ -642,9 +645,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v15 to FORCE DATA RELOAD
-    function saveData() { localStorage.setItem('bkk_2025_v15', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v15'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v16 to FORCE DATA RELOAD (Fixes empty description issue)
+    function saveData() { localStorage.setItem('bkk_2025_v16', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v16'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
@@ -686,7 +689,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v15'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v16'); location.reload(); } }
 </script>
 </body>
 </html>
