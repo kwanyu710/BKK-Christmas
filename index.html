@@ -66,15 +66,14 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Timeline Styles */
         .timeline-item { position: relative; padding-left: 24px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; }
         .timeline-item:last-child { border-left: 2px solid transparent; }
         .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; }
         .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
 
-        /* Account & Modal */
         .account-type-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
         .split-btn.active { background-color: #4A4A4A; color: white; font-weight: bold; }
+        
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 100;
@@ -110,7 +109,6 @@
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2 text-right">Powered by Google Translate</p>
         </div>
 
         <h3 class="text-sm font-bold text-gray-400 mb-3 ml-1">QUICK ACCESS</h3>
@@ -149,11 +147,11 @@
         
         <div class="flex gap-2 mb-6 overflow-x-auto hide-scrollbar">
             <label class="bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm flex items-center gap-2 whitespace-nowrap">
-                <input type="checkbox" class="accent-jp-green">
+                <input type="checkbox" id="check-esim" class="accent-jp-green" onchange="toggleGlobalCheck('esim')">
                 <span class="text-xs font-bold text-jp-text">eSIM</span>
             </label>
             <label class="bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm flex items-center gap-2 whitespace-nowrap">
-                <input type="checkbox" class="accent-jp-green">
+                <input type="checkbox" id="check-insurance" class="accent-jp-green" onchange="toggleGlobalCheck('insurance')">
                 <span class="text-xs font-bold text-jp-text">旅遊保險</span>
             </label>
         </div>
@@ -197,14 +195,12 @@
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">21:30 - 22:30</span>
-                    <p class="text-sm text-jp-text font-medium"><i class="fas fa-car text-gray-400 mr-1"></i> 包車接機 -> 飯店Check-in</p>
-                    <p class="text-xs text-gray-400 mt-1">含等行李，預計半小時車程</p>
+                    <p class="text-sm text-jp-text font-medium">包車接機 -> 飯店Check-in</p>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">Late Night</span>
-                    <p class="text-sm text-jp-text font-medium"><i class="fas fa-utensils text-jp-red mr-1"></i> 唐人街宵夜</p>
-                    <a href="#" class="text-[10px] text-jp-blue underline block mt-1">艾瑞絲美食懶人包</a>
+                    <p class="text-sm text-jp-text font-medium">唐人街宵夜</p>
                 </div>
             </div>
         </div>
@@ -216,16 +212,14 @@
             <div class="pl-2">
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <span class="timeline-time">Morning / Afternoon</span>
-                    <p class="text-sm text-jp-text font-medium mb-1">① 石龍軍路 (文青散策)</p>
-                    <p class="text-sm text-jp-text font-medium mb-1">② 臥佛寺 Wat Pho</p>
-                    <p class="text-sm text-jp-text font-medium mb-1">③ 鄭王廟 Wat Arun</p>
-                    <p class="text-sm text-jp-text font-medium">④ 王朗市場 Wang Lang Market</p>
+                    <span class="timeline-time">Daytime</span>
+                    <p class="text-sm text-jp-text font-medium mb-1">① 石龍軍路 / 臥佛寺 / 鄭王廟</p>
+                    <p class="text-sm text-jp-text font-medium">④ 王朗市場</p>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">Evening</span>
-                    <p class="text-sm text-jp-text font-medium"><i class="fas fa-ship text-jp-blue mr-1"></i> River City 郵輪晚餐</p>
+                    <p class="text-sm text-jp-text font-medium">River City 郵輪晚餐</p>
                 </div>
             </div>
         </div>
@@ -238,8 +232,7 @@
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">Morning</span>
-                    <p class="text-sm text-jp-text font-medium"><i class="fas fa-coffee text-amber-700 mr-1"></i> 早餐: 益生甫記 / 安樂園</p>
-                    <p class="text-xs text-gray-400 mt-1">嵩越路散步</p>
+                    <p class="text-sm text-jp-text font-medium">早餐: 益生甫記 / 安樂園 & 嵩越路</p>
                 </div>
                  <div class="timeline-item">
                     <div class="timeline-dot" style="background: #6B8EAD"></div>
@@ -248,16 +241,9 @@
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <span class="timeline-time">Afternoon</span>
-                    <p class="text-sm text-jp-text font-medium mb-1">石龍軍路 (上半段) / 32Bar</p>
-                    <p class="text-sm text-jp-text font-medium mb-1">唐人街漫遊</p>
-                    <p class="text-sm text-jp-text font-medium">考山路 (Option)</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <span class="timeline-time">Evening</span>
-                    <p class="text-sm text-jp-text font-medium"><i class="fas fa-shopping-bag text-jp-red mr-1"></i> 百貨公司行程</p>
-                    <p class="text-xs text-gray-400">Iconsiam / Central World / Dusit</p>
+                    <span class="timeline-time">Afternoon/Night</span>
+                    <p class="text-sm text-jp-text font-medium mb-1">石龍軍路 / 唐人街 / 考山路</p>
+                    <p class="text-sm text-jp-text font-medium">百貨公司 (Iconsiam/Central)</p>
                 </div>
             </div>
         </div>
@@ -270,35 +256,46 @@
                 <div class="timeline-item">
                     <div class="timeline-dot bg-red-500 border-red-500"></div>
                     <span class="timeline-time text-red-500">08:00 AM</span>
-                    <p class="text-sm text-jp-text font-bold"><i class="fas fa-bus text-jp-text mr-1"></i> 包車出發 (飯店大廳)</p>
+                    <p class="text-sm text-jp-text font-bold">包車出發 (飯店大廳)</p>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">Day Trip</span>
-                    <p class="text-sm text-jp-text font-medium mb-1">📍 美功鐵道市場</p>
-                    <p class="text-sm text-jp-text font-medium mb-1">📍 丹嫩莎水上市場</p>
-                    <p class="text-sm text-jp-text font-medium">📍 樹中廟</p>
+                    <p class="text-sm text-jp-text font-medium">美功鐵道市場 / 丹嫩莎水上市場 / 樹中廟</p>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <span class="timeline-time">15:00 - 16:00</span>
                     <p class="text-sm text-jp-text font-medium">回到曼谷市區</p>
-                    <p class="text-xs text-gray-400 mt-1">回飯店 / 按摩 / 百貨公司</p>
                 </div>
             </div>
         </div>
-
     </div>
 
     <div id="tab-account" class="section px-4 py-4 pb-24">
-        <h2 class="text-xl font-bold text-center mb-6 text-jp-text">新增記帳</h2>
         
-        <div class="bg-jp-card rounded-2xl shadow-soft p-5 border border-gray-100">
-            
+        <a href="https://docs.google.com/spreadsheets/create" target="_blank" class="block bg-green-50 border border-green-200 rounded-xl p-3 mb-6 flex items-center justify-between shadow-sm active:scale-95 transition">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-jp-text">打開共用 Google Sheet</h4>
+                    <p class="text-[10px] text-gray-500">如果需要多人即時同步，建議用這個</p>
+                </div>
+            </div>
+            <i class="fas fa-external-link-alt text-gray-400 text-sm"></i>
+        </a>
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-jp-text">公費記帳 (本機版)</h2>
+            <button onclick="clearTransactions()" class="text-xs text-gray-400 underline">清空紀錄</button>
+        </div>
+        
+        <div class="bg-jp-card rounded-2xl shadow-soft p-5 border border-gray-100 mb-6">
             <div class="mb-5">
                 <p class="text-xs text-gray-400 mb-2">分類</p>
-                <div class="flex justify-between gap-2 overflow-x-auto hide-scrollbar pb-2" id="category-container">
-                    </div>
+                <div class="flex justify-between gap-2 overflow-x-auto hide-scrollbar pb-2" id="category-container"></div>
             </div>
 
             <div class="mb-5">
@@ -310,41 +307,27 @@
                     <input type="number" id="amount-input" placeholder="0" class="w-2/3 text-right text-3xl font-bold text-jp-text bg-transparent border-b border-gray-200 focus:outline-none focus:border-jp-accent p-1">
                 </div>
                 <div class="flex items-center justify-end gap-2 px-1">
-                    <i class="fas fa-wallet text-gray-300 text-xs"></i>
                     <span class="text-xs text-gray-400">公費包餘額:</span>
                     <span class="text-sm font-bold text-jp-text" id="public-fund-display">฿ 0</span>
                 </div>
             </div>
 
             <div class="mb-5">
-                <div class="flex justify-between items-center mb-2">
-                     <p class="text-xs text-gray-400">付款人</p>
-                     <button onclick="editUsers()" class="text-[10px] text-blue-400 underline">編輯名單</button>
-                </div>
-                <div class="flex flex-wrap gap-2" id="payer-container">
-                    </div>
+                <p class="text-xs text-gray-400 mb-2">付款人</p>
+                <div class="flex flex-wrap gap-2" id="payer-container"></div>
             </div>
 
             <div class="mb-5">
-                <p class="text-xs text-gray-400 mb-2">付款模式</p>
+                <p class="text-xs text-gray-400 mb-2">模式</p>
                 <div class="bg-gray-50 rounded-xl p-1 grid grid-cols-2 gap-1">
                     <button onclick="setSplit('shared')" class="split-btn active py-2 rounded-lg text-xs transition" id="split-shared">共同分攤</button>
-                    <button onclick="setSplit('self')" class="split-btn py-2 rounded-lg text-xs transition text-gray-400" id="split-self">個人自付</button>
-                    <button onclick="setSplit('advance')" class="split-btn py-2 rounded-lg text-xs transition text-gray-400" id="split-advance">幫人代墊</button>
                     <button onclick="setSplit('deposit')" class="split-btn py-2 rounded-lg text-xs transition text-gray-400" id="split-deposit">公費入金</button>
-                </div>
-                <div id="advance-info" class="hidden mt-2 text-xs text-jp-red bg-red-50 p-2 rounded">
-                    <i class="fas fa-exclamation-circle"></i> 請點擊「新增紀錄」選擇代墊對象
                 </div>
             </div>
 
             <div class="flex gap-3 mt-6">
-                 <label class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 cursor-pointer active:bg-gray-50">
-                    <i class="fas fa-camera"></i>
-                    <input type="file" accept="image/*" class="hidden" id="receipt-upload">
-                 </label>
                  <div class="flex-1 relative">
-                    <input type="text" id="note-input" placeholder="備註說明..." class="w-full h-12 bg-gray-50 rounded-full px-4 text-sm border border-gray-200 focus:outline-none focus:border-jp-accent">
+                    <input type="text" id="note-input" placeholder="備註 (例如: 7-11)" class="w-full h-12 bg-gray-50 rounded-full px-4 text-sm border border-gray-200 focus:outline-none focus:border-jp-accent">
                  </div>
             </div>
 
@@ -352,6 +335,9 @@
                 新增紀錄
             </button>
         </div>
+
+        <div id="transaction-history" class="space-y-2">
+            </div>
     </div>
     
     <div id="tab-checklist" class="section px-5 py-4 pb-24">
@@ -362,14 +348,38 @@
             </button>
         </div>
         
-        <div id="checklist-container">
-            </div>
+        <div id="checklist-container"></div>
     </div>
 
     <div id="tab-tools" class="section px-5 py-4">
-        <div class="flex flex-col items-center justify-center h-[60vh] text-gray-300">
-            <i class="fas fa-user-astronaut text-6xl mb-4"></i>
-            <p>我的資訊 (空白)</p>
+        <h2 class="text-xl font-bold mb-6">資料同步 & 設定</h2>
+        
+        <div class="bg-white rounded-2xl shadow-soft p-5 mb-6">
+            <h3 class="font-bold text-jp-text mb-3">資料同步 (免伺服器)</h3>
+            <p class="text-xs text-gray-400 mb-4">因為沒有雲端，請用這個方法傳送資料給朋友：</p>
+            
+            <div class="flex gap-3 mb-4">
+                <button onclick="exportData()" class="flex-1 bg-jp-blue text-white py-2 rounded-lg text-sm shadow hover:opacity-90">
+                    <i class="fas fa-upload mr-1"></i> 1. 複製資料
+                </button>
+                <button onclick="openImportModal()" class="flex-1 bg-gray-600 text-white py-2 rounded-lg text-sm shadow hover:opacity-90">
+                    <i class="fas fa-download mr-1"></i> 2. 貼上資料
+                </button>
+            </div>
+            <p class="text-[10px] text-jp-red bg-red-50 p-2 rounded">
+                注意：匯入資料會覆蓋掉你手機上目前的紀錄，請小心使用。
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-soft p-5">
+             <h3 class="font-bold text-jp-text mb-3">人員設定</h3>
+             <p class="text-xs text-gray-400 mb-2">目前的旅伴：</p>
+             <div id="settings-users" class="flex flex-wrap gap-2 mb-3"></div>
+             <button onclick="editUsers()" class="text-xs text-jp-blue underline">新增人員</button>
+        </div>
+        
+        <div class="mt-8 text-center">
+             <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置所有 App 資料</button>
         </div>
     </div>
 
@@ -392,19 +402,18 @@
             <span class="text-[10px]">清單</span>
         </button>
         <button onclick="switchTab('tab-tools')" class="nav-btn flex flex-col items-center gap-1 text-gray-300" data-target="tab-tools">
-            <i class="fas fa-user text-lg"></i>
+            <i class="fas fa-cog text-lg"></i>
             <span class="text-[10px]">我的</span>
         </button>
     </nav>
 
-    <div id="advance-modal" class="modal-overlay">
-        <div class="bg-white w-3/4 rounded-2xl p-5 shadow-2xl">
-            <h3 class="font-bold text-lg mb-4 text-center">幫誰代墊?</h3>
-            <div id="advance-user-list" class="space-y-2 mb-4">
-                </div>
+    <div id="import-modal" class="modal-overlay">
+        <div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl">
+            <h3 class="font-bold text-lg mb-2">貼上資料代碼</h3>
+            <textarea id="import-area" class="w-full h-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs mb-4" placeholder="請在此貼上朋友傳來的代碼..."></textarea>
             <div class="flex gap-2">
-                <button onclick="closeModal('advance-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
-                <button onclick="confirmAdvance()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button>
+                <button onclick="closeModal('import-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
+                <button onclick="confirmImport()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定匯入</button>
             </div>
         </div>
     </div>
@@ -413,68 +422,114 @@
 
 <script>
     // --- STATE MANAGEMENT ---
-    const appState = {
+    // Default State if nothing in LocalStorage
+    const defaultState = {
+        globalChecks: { esim: false, insurance: false },
         currency: 'THB',
         currentSplit: 'shared',
-        fundBalance: 15000, 
+        fundBalance: 0, 
         users: ['小朱', '簡哥', '阿美'], 
-        advanceTargets: [], 
+        transactions: [], // { id, amount, currency, payer, type, note, date }
         checklist: [
             {
                 title: '證件文件',
                 items: [
-                    { name: '護照', checked: true },
+                    { name: '護照', checked: false },
                     { name: '電子機票', checked: false },
                     { name: '飯店憑證', checked: false }
+                ]
+            },
+            {
+                title: '電子用品',
+                items: [
+                    { name: '充電線/行動電源', checked: false },
+                    { name: '網卡/針', checked: false }
                 ]
             }
         ]
     };
 
-    // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', () => {
-        updateDate();
-        fetchWeather();
+    let appState = JSON.parse(JSON.stringify(defaultState));
+
+    // --- LOCAL STORAGE FUNCTIONS ---
+    function saveState() {
+        localStorage.setItem('bkk_trip_2025_v2', JSON.stringify(appState));
+        updateFundDisplay();
+        renderTransactionHistory();
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem('bkk_trip_2025_v2');
+        if (saved) {
+            try {
+                appState = JSON.parse(saved);
+                // Merge if new fields added in update (simple check)
+                if(!appState.transactions) appState.transactions = [];
+            } catch(e) {
+                console.error("Data corrupted, resetting");
+                saveState();
+            }
+        }
+        // Apply State to UI
+        document.getElementById('check-esim').checked = appState.globalChecks.esim || false;
+        document.getElementById('check-insurance').checked = appState.globalChecks.insurance || false;
+        
         renderCategories();
         renderPayers();
         updateFundDisplay();
         renderChecklist();
-    });
-
-    // Setup simple category buttons
-    function renderCategories() {
-        const cats = [
-            { id: 'food', icon: 'fa-utensils', name: '餐飲' },
-            { id: 'transport', icon: 'fa-car', name: '交通' },
-            { id: 'shop', icon: 'fa-shopping-bag', name: '購物' },
-            { id: 'hotel', icon: 'fa-bed', name: '住宿' },
-            { id: 'other', icon: 'fa-ellipsis-h', name: '其他' }
-        ];
-        const container = document.getElementById('category-container');
-        container.innerHTML = cats.map((c, index) => `
-            <button onclick="selectCategory(this)" class="category-btn ${index===0?'active':''} flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center border border-gray-100 text-gray-400 ${index===0 ? 'border-jp-accent bg-[#FFFCF5] text-jp-accent':''}">
-                <i class="fas ${c.icon} text-lg mb-1"></i>
-                <span class="text-xs">${c.name}</span>
-            </button>
-        `).join('');
+        renderSettingsUsers();
+        renderTransactionHistory();
+        setCurrency(appState.currency);
     }
 
-    // --- NAVIGATION ---
-    function switchTab(tabId) {
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        
-        // Update Nav Colors
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('text-jp-accent');
-            btn.classList.add('text-gray-300');
-            
-            // Check if this button targets the active tab
-            if(btn.dataset.target === tabId) {
-                btn.classList.remove('text-gray-300');
-                btn.classList.add('text-jp-accent');
-            }
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        updateDate();
+        fetchWeather();
+        loadState(); // LOAD DATA ON START
+    });
+
+    // --- EXPORT / IMPORT LOGIC ---
+    function exportData() {
+        const dataStr = JSON.stringify(appState);
+        navigator.clipboard.writeText(dataStr).then(() => {
+            alert("已複製資料！\n請貼上到 LINE 傳給朋友");
+        }).catch(err => {
+            alert("複製失敗，請手動複製 console log");
+            console.log(dataStr);
         });
+    }
+
+    function openImportModal() {
+        document.getElementById('import-modal').classList.add('open');
+        document.getElementById('import-area').value = "";
+    }
+
+    function confirmImport() {
+        const str = document.getElementById('import-area').value;
+        if(!str) return;
+        try {
+            const data = JSON.parse(str);
+            if(confirm("確定要匯入嗎？這會覆蓋現在的紀錄")) {
+                appState = data;
+                saveState();
+                loadState(); // Re-render everything
+                closeModal('import-modal');
+                alert("匯入成功！");
+            }
+        } catch(e) {
+            alert("資料格式錯誤，請確認代碼完整");
+        }
+    }
+
+    function hardReset() {
+        if(confirm("確定要重置所有資料嗎？無法復原")) {
+            appState = JSON.parse(JSON.stringify(defaultState));
+            saveState();
+            loadState();
+            alert("已重置");
+        }
     }
 
     // --- HOME PAGE LOGIC ---
@@ -485,7 +540,6 @@
     }
 
     async function fetchWeather() {
-        // Mocking Bangkok Coordinates
         try {
             const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current_weather=true');
             const data = await res.json();
@@ -503,9 +557,33 @@
         window.open(url, '_blank');
     }
 
+    function toggleGlobalCheck(type) {
+        appState.globalChecks[type] = document.getElementById(`check-${type}`).checked;
+        saveState();
+    }
+
+    // --- NAVIGATION ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('text-jp-accent');
+            btn.classList.add('text-gray-300');
+            if(btn.dataset.target === tabId) {
+                btn.classList.remove('text-gray-300');
+                btn.classList.add('text-jp-accent');
+            }
+        });
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+
     // --- ACCOUNTING LOGIC ---
     function setCurrency(curr) {
         appState.currency = curr;
+        saveState();
         document.getElementById('btn-twd').className = curr === 'TWD' 
             ? "w-1/2 rounded-lg text-xs font-bold text-jp-text bg-white shadow-sm transition" 
             : "w-1/2 rounded-lg text-xs font-bold text-gray-400 transition";
@@ -517,7 +595,7 @@
     function renderPayers() {
         const container = document.getElementById('payer-container');
         let html = `
-            <button onclick="selectPayer(this, 'public')" class="payer-btn px-4 py-2 bg-[#FFF8E7] text-jp-accent border border-[#FFEcc0] rounded-lg text-sm font-bold shadow-sm">
+            <button onclick="selectPayer(this, 'public')" class="payer-btn active px-4 py-2 bg-[#FFF8E7] text-jp-accent border border-[#FFEcc0] rounded-lg text-sm font-bold shadow-sm">
                 公費包 <i class="fas fa-users ml-1 text-xs"></i>
             </button>
         `;
@@ -525,6 +603,7 @@
             html += `<button onclick="selectPayer(this, '${u}')" class="payer-btn px-4 py-2 bg-gray-50 text-gray-400 border border-transparent rounded-lg text-sm">${u}</button>`;
         });
         container.innerHTML = html;
+        appState.currentPayer = 'public'; // Reset default
     }
 
     function selectPayer(btn, name) {
@@ -539,13 +618,30 @@
         appState.currentPayer = name;
     }
     
-    setTimeout(() => selectPayer(document.querySelector('.payer-btn'), 'public'), 100);
+    function renderCategories() {
+        const cats = [
+            { id: 'food', icon: 'fa-utensils', name: '餐飲' },
+            { id: 'transport', icon: 'fa-car', name: '交通' },
+            { id: 'shop', icon: 'fa-shopping-bag', name: '購物' },
+            { id: 'hotel', icon: 'fa-bed', name: '住宿' },
+            { id: 'other', icon: 'fa-ellipsis-h', name: '其他' }
+        ];
+        const container = document.getElementById('category-container');
+        container.innerHTML = cats.map((c, index) => `
+            <button onclick="selectCategory(this, '${c.name}')" class="category-btn ${index===0?'active':''} flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center border border-gray-100 text-gray-400 ${index===0 ? 'border-jp-accent bg-[#FFFCF5] text-jp-accent':''}">
+                <i class="fas ${c.icon} text-lg mb-1"></i>
+                <span class="text-xs">${c.name}</span>
+            </button>
+        `).join('');
+        appState.currentCategory = '餐飲';
+    }
 
-    function selectCategory(btn) {
+    function selectCategory(btn, name) {
         document.querySelectorAll('.category-btn').forEach(b => {
             b.className = "category-btn flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center border border-gray-100 text-gray-400";
         });
         btn.className = "category-btn active flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center border border-jp-accent bg-[#FFFCF5] text-jp-accent";
+        appState.currentCategory = name;
     }
 
     function setSplit(method) {
@@ -557,69 +653,86 @@
         const activeBtn = document.getElementById(`split-${method}`);
         activeBtn.classList.remove('text-gray-400');
         activeBtn.classList.add('active');
-        document.getElementById('advance-info').classList.toggle('hidden', method !== 'advance');
-    }
-
-    function updateFundDisplay() {
-        const formatted = appState.fundBalance.toLocaleString();
-        document.getElementById('public-fund-display').innerText = `฿ ${formatted}`;
-        document.getElementById('home-balance').innerText = `公費: ฿${formatted}`;
-    }
-
-    function editUsers() {
-        const newName = prompt("新增使用者名稱:", "");
-        if(newName && !appState.users.includes(newName)) {
-            appState.users.push(newName);
-            renderPayers();
-        }
     }
 
     function submitTransaction() {
         const amount = parseFloat(document.getElementById('amount-input').value);
+        const note = document.getElementById('note-input').value;
         if(!amount) return alert("請輸入金額");
 
+        // Logic
         if (appState.currentSplit === 'deposit') {
-            if(appState.currency === 'THB') appState.fundBalance += amount;
-            else appState.fundBalance += (amount * 1.1); 
-            alert(`已存入公費 ${amount}`);
-        } else if (appState.currentPayer === 'public') {
-            if(appState.currency === 'THB') appState.fundBalance -= amount;
-            else appState.fundBalance -= (amount * 1.1);
-            alert("已從公費扣除");
-        } else if (appState.currentSplit === 'advance') {
-            showAdvanceModal();
-            return; 
+             // Deposit into public fund
+             let val = amount;
+             if(appState.currency === 'TWD') val = amount * 1.1; // Simple exchange rate
+             appState.fundBalance += val;
         } else {
-            alert("紀錄成功 (個人/分攤)");
+            // Expense
+            if(appState.currentPayer === 'public') {
+                let val = amount;
+                if(appState.currency === 'TWD') val = amount * 1.1;
+                appState.fundBalance -= val;
+            }
         }
 
-        updateFundDisplay();
+        const newTx = {
+            date: new Date().toLocaleString(),
+            type: appState.currentSplit,
+            amount: amount,
+            currency: appState.currency,
+            payer: appState.currentPayer,
+            category: appState.currentCategory,
+            note: note || '無備註'
+        };
+        
+        appState.transactions.unshift(newTx); // Add to top
+        saveState();
+        
         document.getElementById('amount-input').value = '';
+        document.getElementById('note-input').value = '';
+        alert("已記錄！");
     }
 
-    function showAdvanceModal() {
-        const list = document.getElementById('advance-user-list');
-        list.innerHTML = appState.users.map(u => `
-            <label class="flex items-center gap-3 p-2 bg-gray-50 rounded">
-                <input type="checkbox" value="${u}" class="w-5 h-5 accent-jp-text">
-                <span>${u}</span>
-            </label>
+    function clearTransactions() {
+        if(confirm("確定清空交易紀錄與公費餘額？")) {
+            appState.transactions = [];
+            appState.fundBalance = 0;
+            saveState();
+        }
+    }
+
+    function updateFundDisplay() {
+        const formatted = Math.round(appState.fundBalance).toLocaleString();
+        document.getElementById('public-fund-display').innerText = `฿ ${formatted}`;
+        document.getElementById('home-balance').innerText = `公費: ฿${formatted}`;
+    }
+
+    function renderTransactionHistory() {
+        const container = document.getElementById('transaction-history');
+        if(appState.transactions.length === 0) {
+            container.innerHTML = '<p class="text-xs text-gray-300 text-center py-4">尚無紀錄</p>';
+            return;
+        }
+        
+        container.innerHTML = appState.transactions.slice(0, 10).map(tx => `
+            <div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border border-gray-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">
+                        ${tx.payer.substring(0,1)}
+                    </div>
+                    <div>
+                        <p class="text-sm text-jp-text font-bold">${tx.note}</p>
+                        <p class="text-[10px] text-gray-400">${tx.category} · ${tx.type === 'deposit' ? '入金' : '支出'}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="block text-sm font-bold ${tx.type==='deposit' ? 'text-green-500' : 'text-jp-text'}">
+                        ${tx.type==='deposit' ? '+' : '-'} ${tx.amount}
+                    </span>
+                    <span class="text-[10px] text-gray-300">${tx.currency}</span>
+                </div>
+            </div>
         `).join('');
-        document.getElementById('advance-modal').classList.add('open');
-    }
-    
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
-    }
-
-    function confirmAdvance() {
-        const checkboxes = document.querySelectorAll('#advance-user-list input:checked');
-        if(checkboxes.length === 0) return alert("請至少選擇一人");
-        let names = [];
-        checkboxes.forEach(c => names.push(c.value));
-        alert(`已記錄：幫 ${names.join(', ')} 代墊費用`);
-        closeModal('advance-modal');
-        document.getElementById('amount-input').value = '';
     }
 
     // --- CHECKLIST LOGIC ---
@@ -662,13 +775,14 @@
 
     function toggleCheck(gIndex, iIndex) {
         appState.checklist[gIndex].items[iIndex].checked = !appState.checklist[gIndex].items[iIndex].checked;
+        saveState();
         renderChecklist();
     }
 
     function addChecklistItem() {
-        const category = prompt("請輸入新的分類名稱 (若要新增細項請填寫現有分類):", "隨身用品");
+        const category = prompt("分類 (例如: 隨身包):", "隨身包");
         if(!category) return;
-        const item = prompt("請輸入物品名稱:", "行動電源");
+        const item = prompt("物品名稱:", "護照影本");
         if(!item) return;
 
         let group = appState.checklist.find(g => g.title === category);
@@ -680,7 +794,26 @@
                 items: [{ name: item, checked: false }]
             });
         }
+        saveState();
         renderChecklist();
+    }
+
+    // --- SETTINGS LOGIC ---
+    function renderSettingsUsers() {
+        const container = document.getElementById('settings-users');
+        container.innerHTML = appState.users.map(u => 
+            `<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">${u}</span>`
+        ).join('');
+    }
+
+    function editUsers() {
+        const newName = prompt("新增旅伴名字:", "");
+        if(newName && !appState.users.includes(newName)) {
+            appState.users.push(newName);
+            saveState();
+            renderSettingsUsers();
+            renderPayers(); // Update in account tab
+        }
     }
 </script>
 
