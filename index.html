@@ -73,7 +73,9 @@
         </div>
         <div class="text-center">
              <span class="block text-[10px] text-gray-400">曼谷</span>
-             <span class="text-sm font-medium" id="header-weather">Loading...</span>
+             <span class="text-sm font-medium transition-all duration-300" id="header-status">
+                 <span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>
+             </span>
         </div>
     </header>
 
@@ -267,6 +269,15 @@
              <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置所有 App 資料 (慎用)</button>
         </div>
     </div>
+    
+    <div class="fixed right-5 bottom-24 z-50 flex flex-col gap-3">
+        <button onclick="syncToCloud('download')" class="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition hover:text-jp-blue">
+            <i class="fas fa-cloud-download-alt"></i>
+        </button>
+        <button onclick="syncToCloud('upload')" class="w-10 h-10 rounded-full bg-jp-text shadow-lg border border-jp-text flex items-center justify-center text-white active:scale-90 transition hover:bg-gray-700">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </button>
+    </div>
 
     <nav class="fixed bottom-6 left-5 right-5 h-16 bg-white/95 backdrop-blur rounded-2xl flex justify-around items-center shadow-gold z-50 border border-gray-100">
         <button onclick="switchTab('tab-home')" class="nav-btn active flex flex-col items-center gap-1 text-gray-400" data-target="tab-home">
@@ -378,7 +389,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
-            loadData();
+            loadData(); // Load local data first
             updateDate();
             fetchWeather();
             fetchExchangeRate();
@@ -389,6 +400,10 @@
             updateFundDisplay();
             renderHistory();
             renderChecklist();
+            
+            // AUTO SYNC ON LOAD
+            autoSync();
+
             console.log("App initialized successfully");
         } catch (e) {
             alert("App Init Error: " + e.message);
@@ -408,10 +423,9 @@
 
     async function fetchExchangeRate() {
         try {
-            // Fetching THB base to see how much TWD is 1 THB
             const res = await fetch('https://api.exchangerate-api.com/v4/latest/THB');
             const data = await res.json();
-            const rate = data.rates.TWD; // 1 THB = X TWD (e.g., 0.92)
+            const rate = data.rates.TWD; 
             document.getElementById('dash-rate').innerText = rate.toFixed(2);
         } catch {
             document.getElementById('dash-rate').innerText = "0.92";
@@ -557,13 +571,50 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    function saveData() { localStorage.setItem('bkk_2025_v7', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v7'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    function saveData() { localStorage.setItem('bkk_2025_v8', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v8'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
+    async function autoSync() {
+        const headerStatus = document.getElementById('header-status');
+        const headerWeather = document.getElementById('header-weather');
+        
+        // UI: Show syncing
+        if(headerStatus) {
+            headerStatus.innerHTML = '<span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>';
+        }
+
+        try {
+            const res = await fetch(GOOGLE_SCRIPT_URL);
+            const cloudData = await res.json();
+            
+            if (cloudData && typeof cloudData === 'object') {
+                state = { ...state, ...cloudData }; // Merge/Overwrite
+                saveData();
+                
+                // Re-render everything
+                renderItinerary();
+                renderAccCats();
+                renderPayers();
+                updateFundDisplay();
+                renderHistory();
+                renderChecklist();
+                console.log("Auto-synced from cloud");
+            }
+        } catch (e) {
+            console.log("Auto-sync failed (offline?)");
+        } finally {
+            // Restore Weather UI
+            fetchWeather();
+        }
+    }
+
     async function syncToCloud(action) {
+        // Try to find the buttons if they exist (on settings page) for UI feedback, but don't crash if missing
         const btn = document.getElementById(action==='upload'?'btn-upload':'btn-download');
-        const oldTxt = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+        let oldTxt = '';
+        if(btn) { oldTxt = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true; }
+        
         try {
             if (action === 'upload') {
                 await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(state) });
@@ -573,13 +624,16 @@
                 const data = await res.json();
                 if (data && confirm("確定用雲端資料覆蓋本機?")) { state = {...state, ...data}; saveData(); location.reload(); }
             }
-        } catch (e) { alert("同步失敗: " + e.message); } finally { btn.innerHTML = oldTxt; btn.disabled = false; }
+        } catch (e) { alert("同步失敗: " + e.message); } 
+        finally { 
+            if(btn) { btn.innerHTML = oldTxt; btn.disabled = false; }
+        }
     }
     function exportData() { navigator.clipboard.writeText(JSON.stringify(state)); alert("代碼已複製"); }
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v7'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v8'); location.reload(); } }
 </script>
 </body>
 </html>
