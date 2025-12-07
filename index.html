@@ -332,38 +332,38 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS ---
+    // --- UPDATED DATA WITH DEEP DESCRIPTIONS FOR ALL SPOTS (V13) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
-            { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500" }, 
-            { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店 (車程約30分)", "icon": "fa-car", "color": "text-green-600", "highlight": true }, 
+            { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
+            { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店 (車程約30分)", "icon": "fa-car", "color": "text-green-600", "highlight": true, "deep_desc": "泰國高速公路 (Tollway) 通常需要乘客額外支付過路費 (約 50-70 泰銖)，司機過收費站時會跟你要錢，這是正常的喔！準備好小鈔。" }, 
             { "time": "Late", "name": "唐人街宵夜", "desc": "Check-in 後覓食", "icon": "fa-utensils", "color": "text-orange-500", "keyword": "曼谷唐人街美食", "deep_desc": "曼谷唐人街 (耀華力路) 是全球最古老的唐人街之一。這裡晚上的霓虹燈招牌有種 80 年代香港電影的氛圍。必吃推薦：T&K 海鮮（綠色制服）、粿汁（Kway Chap）。" }, 
-            { "time": "Sleep", "name": "B2 唐人街飯店", "desc": "入住休息", "link": "https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc", "keyword": "", "icon": "fa-bed", "color": "text-gray-500" } 
+            { "time": "Sleep", "name": "B2 唐人街飯店", "desc": "入住休息", "link": "https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc", "keyword": "", "icon": "fa-bed", "color": "text-gray-500", "deep_desc": "B2 是泰國知名的平價連鎖飯店，主打工業風設計。唐人街分店位置極佳，走路就能到 MRT Wat Mangkon 站，且周邊充滿老曼谷的生活氣息。" } 
         ] },
         { "day": 2, "date": "12/24 (三)", "desc": "舊城古蹟巡禮", "spots": [ 
             { "time": "09:30", "name": "石龍軍路", "desc": "文青散策 / 美食", "link": "", "keyword": "石龍軍路美食", "icon": "fa-walking", "color": "text-gray-500", "deep_desc": "Charoen Krung 是曼谷第一條鋪設的道路，充滿歷史感。這裡融合了老式廣東茶室、百年教堂與新興的藝廊。推薦嘗試「仁和園」涼茶，或是米其林推薦的豬腳飯。" }, 
-            { "time": "11:00", "name": "臥佛寺", "desc": "必拍古蹟", "link": "", "keyword": "臥佛寺", "icon": "fa-gopuram", "color": "text-gray-500" }, 
+            { "time": "11:00", "name": "臥佛寺", "desc": "必拍古蹟", "link": "", "keyword": "臥佛寺", "icon": "fa-gopuram", "color": "text-gray-500", "deep_desc": "這裡擁有泰國最大的臥佛像 (長46公尺)，腳底刻有 108 個佛陀祥瑞圖案。此外，臥佛寺也是泰式按摩的發源地，如果走累了，可以在寺內的按摩學校體驗最正宗的泰式古法按摩。" }, 
             { "time": "13:30", "name": "鄭王廟", "desc": "拍照參觀", "link": "https://maps.app.goo.gl/4t2JkPEY1yKKBtoq5?g_st=ipc", "keyword": "鄭王廟", "icon": "fa-store", "color": "text-gray-500", "deep_desc": "又稱黎明寺 (Wat Arun)。不同於泰國常見的金碧輝煌，這裡以白色為底，鑲嵌著無數中國運來的彩色碎瓷片。這座塔象徵著佛教宇宙觀中的須彌山，日落時分的剪影被譽為曼谷最美景色之一。" }, 
-            { "time": "14:30", "name": "王朗市場", "desc": "在地小吃", "link": "https://maps.app.goo.gl/Q43nUqg7KE9dRj8Z9?g_st=ipc", "keyword": "王朗市場", "icon": "fa-map-marker-alt", "color": "text-gray-500" }, 
-            { "time": "19:00", "name": "昭披耶河晚餐", "desc": "River City 郵輪", "icon": "fa-ship", "color": "text-blue-600", "keyword": "昭披耶河遊船推薦" } 
+            { "time": "14:30", "name": "王朗市場", "desc": "在地小吃", "link": "https://maps.app.goo.gl/Q43nUqg7KE9dRj8Z9?g_st=ipc", "keyword": "王朗市場", "icon": "fa-map-marker-alt", "color": "text-gray-500", "deep_desc": "Wang Lang Market 是當地大學生和護士最愛的市場，觀光客較少，價格非常親民！必買：炸麵包 (Wang Lang Bakery)、泰式甜點、烤肉串。這裡也是搭船過河到大皇宮的轉運點。" }, 
+            { "time": "19:00", "name": "昭披耶河晚餐", "desc": "River City 郵輪", "icon": "fa-ship", "color": "text-blue-600", "keyword": "昭披耶河遊船推薦", "deep_desc": "在船上用餐的亮點不是食物，而是兩岸的夜景。你會看到夜晚點燈的鄭王廟和大皇宮，與白天截然不同。建議選擇露天座位，享受河風吹拂的浪漫氛圍。" } 
         ] },
         { "day": 3, "date": "12/25 (四)", "desc": "通羅時尚漫遊", "spots": [ 
             { "time": "09:00", "name": "傳統早餐", "desc": "益生甫記 or 安樂園", "link": "https://maps.app.goo.gl/JmfSPvJffbXh7CeS7?g_st=ipc", "keyword": "曼谷 安樂園", "icon": "fa-coffee", "color": "text-gray-500", "deep_desc": "安樂園 (On Lok Yun) 開業超過 80 年，是曼谷經典的「洋食」早餐店。這裡的咖椰吐司 (Kaya Toast) 與泰式奶茶是絕配，彷彿時光倒流至二戰後的曼谷。" }, 
-            { "time": "10:30", "name": "嵩越路", "desc": "文青街拍", "link": "https://maps.app.goo.gl/eM2DRoHF2P22VCAv8?g_st=ipc", "keyword": "嵩越路", "icon": "fa-camera", "color": "text-gray-500" }, 
-            { "time": "12:00", "name": "換飯店", "desc": "前往 Jasmine 59 Hotel (通羅)", "link": "https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc", "keyword": "", "icon": "fa-suitcase", "color": "text-gray-500" }, 
+            { "time": "10:30", "name": "嵩越路", "desc": "文青街拍", "link": "https://maps.app.goo.gl/eM2DRoHF2P22VCAv8?g_st=ipc", "keyword": "嵩越路", "icon": "fa-camera", "color": "text-gray-500", "deep_desc": "Song Wat Road 是近期曼谷最紅的文青街區。早期是香料與大米的貿易集散地，現在老倉庫改建成了藝廊與質感咖啡廳 (如 FV Cafe)。牆上的大象塗鴉是必拍地標。" }, 
+            { "time": "12:00", "name": "換飯店", "desc": "前往 Jasmine 59 Hotel (通羅)", "link": "https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc", "keyword": "", "icon": "fa-suitcase", "color": "text-gray-500", "deep_desc": "移動日請善用 Grab SUV 或 Van 車型，因為我們行李不少。通羅區交通較壅塞，要有塞車的心理準備。" }, 
             { "time": "14:00", "name": "通羅商圈", "desc": "咖啡廳 / 逛街", "icon": "fa-glass-cheers", "color": "text-purple-500", "deep_desc": "Thong Lor (通羅) 被稱為曼谷的「小日本」或富人區。這裡聚集了最高密度的精品咖啡廳、日式居酒屋與隱藏版酒吧 (Speakeasy Bar)。" }, 
-            { "time": "Eve", "name": "百貨 / 考山路", "desc": "Iconsiam / Central World", "icon": "fa-shopping-bag", "color": "text-jp-text", "deep_desc": "Iconsiam 最具特色的就是一樓的「室內水上市場」(SookSiam)，完美復刻了泰國傳統水上人家的風情，且冷氣開放，逛起來非常舒適。" } 
+            { "time": "Eve", "name": "百貨 / 考山路", "desc": "Iconsiam / Central World", "icon": "fa-shopping-bag", "color": "text-jp-text", "deep_desc": "Iconsiam 最具特色的就是一樓的「室內水上市場」(SookSiam)，完美復刻了泰國傳統水上人家的風情，且冷氣開放，逛起來非常舒適。若去 Central World，別忘了拜一下門口的愛神與象神。" } 
         ] },
         { "day": 4, "date": "12/26 (五)", "desc": "水上市場一日遊", "spots": [ 
-            { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true }, 
+            { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true, "deep_desc": "今天的行程距離曼谷市區較遠 (約 1.5 - 2 小時車程)，請大家務必準時，以免塞車延誤火車進站的時間。" }, 
             { "time": "10:00", "name": "美功鐵道市場", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500", "deep_desc": "這裡被稱為「世界上最危險的市場」。每天有 8 班火車經過，攤販會在火車鳴笛瞬間，熟練地收起遮陽棚與籃子，火車一過又瞬間恢復原狀，是泰國獨有的奇景。" }, 
-            { "time": "12:00", "name": "丹嫩莎水上市場", "desc": "手搖船體驗", "link": "https://maps.app.goo.gl/n4JDTNY2q7Bqkrxw8?g_st=ipc", "keyword": "丹嫩莎朵", "icon": "fa-water", "color": "text-gray-500" }, 
+            { "time": "12:00", "name": "丹嫩莎水上市場", "desc": "手搖船體驗", "link": "https://maps.app.goo.gl/n4JDTNY2q7Bqkrxw8?g_st=ipc", "keyword": "丹嫩莎朵", "icon": "fa-water", "color": "text-gray-500", "deep_desc": "这是 007 電影《金槍人》的拍攝場景。雖然商業化程度高，但卻是體驗「手搖船」塞船的最佳地點。記得：船上的東西通常比岸上貴，殺價要從 3 折開始殺！" }, 
             { "time": "14:00", "name": "樹中廟", "desc": "靈驗古廟", "link": "https://maps.app.goo.gl/z8xrK7NTUiyW4P6n8?g_st=ipc", "keyword": "樹中廟", "icon": "fa-vihara", "color": "text-gray-500", "deep_desc": "這是一座被菩提樹根完全包覆的佛殿，已有 400 多年歷史。相傳鄭王在攻打緬甸軍之前曾來此祈求勝利，結果大勝，因此被視為極其靈驗的求勝之廟。" }, 
-            { "time": "16:00", "name": "返回曼谷", "desc": "回飯店或按摩", "icon": "fa-home", "color": "text-gray-500" } 
+            { "time": "16:00", "name": "返回曼谷", "desc": "回飯店或按摩", "icon": "fa-home", "color": "text-gray-500", "deep_desc": "回程通常會遇到曼谷著名的下班尖峰車潮，這段時間可以在車上補眠，或討論晚餐吃什麼。" } 
         ] },
         { "day": 5, "date": "12/27 (六)", "desc": "返台 / 自由", "spots": [ 
-            { "time": "10:00", "name": "恰圖恰市集", "desc": "最後採買", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500", "deep_desc": "Chatuchak 是世界最大的週末市集，擁有一萬五千個攤位。分區複雜，建議看到喜歡的就買，因為回頭很難再找到同一家店！記得殺價。" }, 
-            { "time": "Flight", "name": "前往機場", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500" } 
+            { "time": "10:00", "name": "恰圖恰市集", "desc": "最後採買", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500", "deep_desc": "Chatuchak 是世界最大的週末市集，擁有一萬五千個攤位。分區複雜，建議看到喜歡的就買，因為回頭很難再找到同一家店！這裡也是買香氛、手工藝品和紀念品的最佳地點。" }, 
+            { "time": "Flight", "name": "前往機場", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500", "deep_desc": "若有在百貨公司申請退稅 (VAT Refund)，記得先在機場大廳的退稅辦公室蓋章，過了海關後再去領錢喔！" } 
         ] }
     ];
 
@@ -624,19 +624,17 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v12
-    function saveData() { localStorage.setItem('bkk_2025_v12', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v12'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v13 to FORCE DATA RELOAD
+    function saveData() { localStorage.setItem('bkk_2025_v13', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v13'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
         const display = document.getElementById('header-display-area');
         if(display) display.innerHTML = '<span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>';
-        
         try {
             const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime());
             const cloudData = await res.json();
-            
             if (cloudData && typeof cloudData === 'object' && Object.keys(cloudData).length > 0) {
                 state = { ...state, ...cloudData };
                 saveData();
@@ -670,7 +668,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v12'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v13'); location.reload(); } }
 </script>
 </body>
 </html>
