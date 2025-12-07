@@ -155,12 +155,12 @@
              <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-blue mb-2">
                  <p class="text-xs font-bold text-jp-blue">12/23 - 12/25 (唐人街)</p>
                  <p class="text-sm font-bold text-jp-text">B2 唐人街耀華力尊尚飯店</p>
-                 <a href="https://www.google.com/maps/search/?api=1&query=B2+China+Town+Yaowarat+Premier+Hotel" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+                 <a href="https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
              </div>
              <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-accent">
                  <p class="text-xs font-bold text-jp-accent">12/25 - 12/27 (通羅)</p>
                  <p class="text-sm font-bold text-jp-text">曼谷茉莉花59號飯店</p>
-                 <a href="https://www.google.com/maps/search/?api=1&query=Jasmine+59+Hotel" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+                 <a href="https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
              </div>
         </div>
     </div>
@@ -328,61 +328,72 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- FULL DATA FROM MANGO ITINERARY.TXT ---
+    // --- UPDATED DATA FROM YOUR JSON ---
     const DEFAULT_ITINERARY = [
-        { 
-            day: 1, date: "12/23 (二)", desc: "抵達曼谷", 
-            spots: [
-                { time: "18:00", name: "高雄機場出發", desc: "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", icon: "fa-plane", color: "text-blue-500" },
-                { time: "22:30", name: "機場包車接機", desc: "前往 B2 飯店 (車程約30分)", icon: "fa-car", color: "text-green-600", highlight: true },
-                { time: "Late", name: "唐人街宵夜", desc: "Check-in 後覓食", icon: "fa-utensils", color: "text-orange-500", keyword: "曼谷唐人街美食" },
-                { time: "Sleep", name: "B2 唐人街飯店", desc: "入住休息", icon: "fa-bed", color: "text-jp-blue" }
+        {
+            "day": 1,
+            "date": "12/23 (二)",
+            "desc": "抵達曼谷",
+            "spots": [
+                { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500" },
+                { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店 (車程約30分)", "icon": "fa-car", "color": "text-green-600", "highlight": true },
+                { "time": "Late", "name": "唐人街宵夜", "desc": "Check-in 後覓食", "icon": "fa-utensils", "color": "text-orange-500", "keyword": "曼谷唐人街美食" },
+                { "time": "Sleep", "name": "B2 唐人街飯店", "desc": "入住休息", "link": "https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc", "keyword": "", "icon": "fa-bed", "color": "text-gray-500" }
             ]
         },
-        { 
-            day: 2, date: "12/24 (三)", desc: "舊城古蹟巡禮", 
-            spots: [
-                { time: "Day", name: "石龍軍路", desc: "文青散策 / 美食 (豬腳飯、仁和園)", icon: "fa-walking", color: "text-gray-500", keyword: "石龍軍路美食" },
-                { time: "10:00", name: "臥佛寺 & 鄭王廟", desc: "必拍古蹟", icon: "fa-gopuram", color: "text-yellow-600", keyword: "鄭王廟 拍照" },
-                { time: "12:00", name: "王朗市場", desc: "在地市集", icon: "fa-store", color: "text-orange-500", keyword: "王朗市場" },
-                { time: "19:00", name: "昭披耶河晚餐", desc: "River City 郵輪", icon: "fa-ship", color: "text-blue-600", keyword: "昭披耶河遊船推薦" }
+        {
+            "day": 2,
+            "date": "12/24 (三)",
+            "desc": "舊城古蹟巡禮",
+            "spots": [
+                { "time": "09:30", "name": "石龍軍路", "desc": "文青散策 / 美食 (豬腳飯、仁和園)", "link": "", "keyword": "石龍軍路美食", "icon": "fa-walking", "color": "text-gray-500" },
+                { "time": "11:00", "name": "臥佛寺", "desc": "必拍古蹟", "link": "", "keyword": "鄭王廟 拍照", "icon": "fa-gopuram", "color": "text-gray-500" },
+                { "time": "13:30", "name": "鄭王廟", "desc": "拍照參觀", "link": "https://maps.app.goo.gl/4t2JkPEY1yKKBtoq5?g_st=ipc", "keyword": "鄭王廟", "icon": "fa-store", "color": "text-gray-500" },
+                { "time": "14:30", "name": "王朗市場", "desc": "拍照參觀", "link": "https://maps.app.goo.gl/Q43nUqg7KE9dRj8Z9?g_st=ipc", "keyword": "王朗市場", "icon": "fa-map-marker-alt", "color": "text-gray-500" },
+                { "time": "19:00", "name": "昭披耶河晚餐", "desc": "River City 郵輪", "icon": "fa-ship", "color": "text-blue-600", "keyword": "昭披耶河遊船推薦" }
             ]
         },
-        { 
-            day: 3, date: "12/25 (四)", desc: "通羅時尚漫遊", 
-            spots: [
-                { time: "09:00", name: "傳統早餐", desc: "益生甫記 / 安樂園", icon: "fa-coffee", color: "text-brown-500", keyword: "曼谷 安樂園" },
-                { time: "10:30", name: "嵩越路", desc: "文青街拍", icon: "fa-camera", color: "text-pink-500", keyword: "嵩越路" },
-                { time: "12:00", name: "換飯店", desc: "前往 Jasmine 59 Hotel (通羅)", icon: "fa-suitcase", color: "text-jp-blue", highlight: true },
-                { time: "14:00", name: "石龍軍路(上)", desc: "32Bar", icon: "fa-glass-cheers", color: "text-purple-500" },
-                { time: "Eve", name: "百貨 / 考山路", desc: "Iconsiam / Central World / 考山路", icon: "fa-shopping-bag", color: "text-jp-text" }
+        {
+            "day": 3,
+            "date": "12/25 (四)",
+            "desc": "通羅時尚漫遊",
+            "spots": [
+                { "time": "09:00", "name": "傳統早餐", "desc": "益生甫記  or 安樂園", "link": "https://maps.app.goo.gl/JmfSPvJffbXh7CeS7?g_st=ipc", "keyword": "曼谷 安樂園", "icon": "fa-coffee", "color": "text-gray-500" },
+                { "time": "10:30", "name": "嵩越路", "desc": "文青街拍", "link": "https://maps.app.goo.gl/eM2DRoHF2P22VCAv8?g_st=ipc", "keyword": "嵩越路", "icon": "fa-camera", "color": "text-gray-500" },
+                { "time": "12:00", "name": "換飯店", "desc": "前往 Jasmine 59 Hotel (通羅)", "link": "https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc", "keyword": "", "icon": "fa-suitcase", "color": "text-gray-500" },
+                { "time": "14:00", "name": "石龍軍路(上)", "desc": "32Bar", "icon": "fa-glass-cheers", "color": "text-purple-500" },
+                { "time": "Eve", "name": "百貨 / 考山路", "desc": "Iconsiam / Central World / 考山路", "icon": "fa-shopping-bag", "color": "text-jp-text" }
             ]
         },
-        { 
-            day: 4, date: "12/26 (五)", desc: "水上市場一日遊", 
-            spots: [
-                { time: "08:00", name: "包車出發", desc: "飯店大廳集合 (準時!)", icon: "fa-car", color: "text-red-500", highlight: true },
-                { time: "10:00", name: "美功鐵道市場", desc: "看火車進站", icon: "fa-train", color: "text-orange-500" },
-                { time: "12:00", name: "丹嫩莎水上市場", desc: "手搖船體驗", icon: "fa-water", color: "text-blue-400" },
-                { time: "14:00", name: "樹中廟", desc: "靈驗古廟", icon: "fa-vihara", color: "text-yellow-600" },
-                { time: "16:00", name: "返回曼谷", desc: "回飯店或按摩", icon: "fa-home", color: "text-gray-500" }
+        {
+            "day": 4,
+            "date": "12/26 (五)",
+            "desc": "水上市場一日遊",
+            "spots": [
+                { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true },
+                { "time": "10:00", "name": "美功鐵道市場", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500" },
+                { "time": "12:00", "name": "丹嫩莎水上市場", "desc": "手搖船體驗", "link": "https://maps.app.goo.gl/n4JDTNY2q7Bqkrxw8?g_st=ipc", "keyword": "樹中廟", "icon": "fa-water", "color": "text-gray-500" },
+                { "time": "14:00", "name": "樹中廟", "desc": "靈驗古廟", "link": "https://maps.app.goo.gl/z8xrK7NTUiyW4P6n8?g_st=ipc", "keyword": "樹中廟", "icon": "fa-vihara", "color": "text-gray-500" },
+                { "time": "16:00", "name": "返回曼谷", "desc": "回飯店或按摩", "icon": "fa-home", "color": "text-gray-500" }
             ]
         },
-        { 
-            day: 5, date: "12/27 (六)", desc: "返台 / 自由", 
-            spots: [
-                { time: "Free", name: "自由活動", desc: "最後採買 / 按摩", icon: "fa-smile", color: "text-green-500" },
-                { time: "Flight", name: "前往機場", desc: "預備返台", icon: "fa-plane-departure", color: "text-blue-500" }
+        {
+            "day": 5,
+            "date": "12/27 (六)",
+            "desc": "返台 / 自由",
+            "spots": [
+                { "time": "10:00", "name": "恰圖恰市集", "desc": "最後採買 / 按摩", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500" },
+                { "time": "Flight", "name": "前往機場", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500" }
             ]
         }
     ];
 
     let state = {
-        users: ['冠仔', '小芳', '玠宇', '婕茹', '芝伶', '公費包'],
+        users: ["冠仔","小芳","玠宇","婕茹","芝伶","公費包"],
         fundBalance: 0,
         currency: 'THB',
         transactions: [],
-        checklist: [{ title: "證件", items: [{name: "護照", checked: true}, {name: "eSIM", checked: false}, {name: "保險單", checked: false}] }],
+        checklist: [{"title":"證件","items":[{"name":"護照","checked":true},{"name":"eSIM","checked":false},{"name":"保險單","checked":false}]}],
         itinerary: DEFAULT_ITINERARY, 
         currentDay: 0
     };
