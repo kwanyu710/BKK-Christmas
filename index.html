@@ -41,15 +41,16 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Timeline */
-        .timeline-item { position: relative; padding-left: 36px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 10px; }
+        /* Timeline Styles with Drag Handle */
+        .timeline-item { position: relative; padding-left: 32px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 12px; transition: transform 0.2s; }
         .timeline-item:last-child { border-left: 2px solid transparent; }
         .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; z-index: 10; }
         .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
-
-        /* Drag Handle */
-        .drag-handle { position: absolute; left: -36px; top: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #d1d5db; cursor: grab; touch-action: none; }
+        
+        /* Drag Handle Styling */
+        .drag-handle { position: absolute; left: -40px; top: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #D1D5DB; cursor: grab; touch-action: none; }
         .drag-handle:active { color: #C6A568; cursor: grabbing; }
+        .sortable-ghost { opacity: 0.3; background: #f3f4f6; border-radius: 12px; }
 
         /* Buttons */
         .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
@@ -65,9 +66,6 @@
         /* Edit Buttons */
         .edit-spot-btn { opacity: 0.3; transition: 0.2s; }
         .timeline-item:hover .edit-spot-btn { opacity: 1; }
-
-        /* Sortable Ghost */
-        .sortable-ghost { opacity: 0.4; background: #FFF9E6; }
     </style>
 </head>
 <body>
@@ -335,12 +333,15 @@
 </div>
 
 <script>
+    // URL UPDATED AS REQUESTED
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA ---
+    // --- FULL DATA ---
     const DEFAULT_ITINERARY = [
         {
-            "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷",
+            "day": 1,
+            "date": "12/23 (二)",
+            "desc": "抵達曼谷",
             "spots": [
                 { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500" },
                 { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店 (車程約30分)", "icon": "fa-car", "color": "text-green-600", "highlight": true },
@@ -349,7 +350,9 @@
             ]
         },
         {
-            "day": 2, "date": "12/24 (三)", "desc": "舊城古蹟巡禮",
+            "day": 2,
+            "date": "12/24 (三)",
+            "desc": "舊城古蹟巡禮",
             "spots": [
                 { "time": "09:30", "name": "石龍軍路", "desc": "文青散策 / 美食 (豬腳飯、仁和園)", "link": "", "keyword": "石龍軍路美食", "icon": "fa-walking", "color": "text-gray-500" },
                 { "time": "11:00", "name": "臥佛寺", "desc": "必拍古蹟", "link": "", "keyword": "鄭王廟 拍照", "icon": "fa-gopuram", "color": "text-gray-500" },
@@ -359,7 +362,9 @@
             ]
         },
         {
-            "day": 3, "date": "12/25 (四)", "desc": "通羅時尚漫遊",
+            "day": 3,
+            "date": "12/25 (四)",
+            "desc": "通羅時尚漫遊",
             "spots": [
                 { "time": "09:00", "name": "傳統早餐", "desc": "益生甫記  or 安樂園", "link": "https://maps.app.goo.gl/JmfSPvJffbXh7CeS7?g_st=ipc", "keyword": "曼谷 安樂園", "icon": "fa-coffee", "color": "text-gray-500" },
                 { "time": "10:30", "name": "嵩越路", "desc": "文青街拍", "link": "https://maps.app.goo.gl/eM2DRoHF2P22VCAv8?g_st=ipc", "keyword": "嵩越路", "icon": "fa-camera", "color": "text-gray-500" },
@@ -369,7 +374,9 @@
             ]
         },
         {
-            "day": 4, "date": "12/26 (五)", "desc": "水上市場一日遊",
+            "day": 4,
+            "date": "12/26 (五)",
+            "desc": "水上市場一日遊",
             "spots": [
                 { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true },
                 { "time": "10:00", "name": "美功鐵道市場", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500" },
@@ -379,7 +386,9 @@
             ]
         },
         {
-            "day": 5, "date": "12/27 (六)", "desc": "返台 / 自由",
+            "day": 5,
+            "date": "12/27 (六)",
+            "desc": "返台 / 自由",
             "spots": [
                 { "time": "10:00", "name": "恰圖恰市集", "desc": "最後採買 / 按摩", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500" },
                 { "time": "Flight", "name": "前往機場", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500" }
@@ -412,13 +421,9 @@
             updateFundDisplay();
             renderHistory();
             renderChecklist();
-            
-            // Try Auto Sync
-            autoSync();
-
-            console.log("App initialized successfully");
+            autoSync(); // Auto sync on load
         } catch (e) {
-            alert("App Init Error: " + e.message);
+            console.error(e);
         }
     });
 
@@ -485,7 +490,6 @@
             </div>
         `).join('');
 
-        // Init Sortable
         if(sortableInstance) sortableInstance.destroy();
         sortableInstance = new Sortable(c, {
             handle: '.drag-handle',
@@ -495,13 +499,9 @@
                 const oldIndex = evt.oldIndex;
                 const newIndex = evt.newIndex;
                 if(oldIndex === newIndex) return;
-
-                // Update Data
                 const spots = state.itinerary[state.currentDay].spots;
                 const [movedItem] = spots.splice(oldIndex, 1);
                 spots.splice(newIndex, 0, movedItem);
-                
-                // Save and Re-render (to fix CSS timeline borders)
                 saveData();
                 renderItinerary();
             }
@@ -541,9 +541,6 @@
         
         if (currentEditIndex === -1) { state.itinerary[state.currentDay].spots.push(s); }
         else { state.itinerary[state.currentDay].spots[currentEditIndex] = s; }
-        
-        // Removed Auto-Sort by time to allow manual sorting
-        // state.itinerary[state.currentDay].spots.sort((a,b)=>a.time.localeCompare(b.time)); 
         
         saveData(); renderItinerary(); closeModal('itinerary-modal');
     }
@@ -610,20 +607,19 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    function saveData() { localStorage.setItem('bkk_2025_v8', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v8'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    function saveData() { localStorage.setItem('bkk_2025_v10', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v10'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
         const headerStatus = document.getElementById('header-status');
         if(headerStatus) headerStatus.innerHTML = '<span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>';
         
-        // Add timestamp to disable caching
         try {
             const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime());
             const cloudData = await res.json();
             
-            if (cloudData && typeof cloudData === 'object') {
+            if (cloudData && typeof cloudData === 'object' && Object.keys(cloudData).length > 0) {
                 state = { ...state, ...cloudData };
                 saveData();
                 renderAll();
@@ -643,12 +639,10 @@
         
         try {
             if (action === 'upload') {
-                // Add timestamp to ensure data is unique
-                state._lastUpdated = new Date().getTime(); 
                 await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(state) });
                 alert("已送出請求。請等待 3-5 秒後在另一台裝置按「下載」。");
             } else {
-                const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime()); // Anti-cache
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime()); 
                 const data = await res.json();
                 if (data && confirm("確定用雲端資料覆蓋本機?")) { 
                     state = {...state, ...data}; 
@@ -676,7 +670,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v8'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v10'); location.reload(); } }
 </script>
 </body>
 </html>
