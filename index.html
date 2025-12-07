@@ -255,6 +255,7 @@
              <div class="bg-mag-paper rounded-xl p-4 shadow-sm border border-amber-100">
                  <h4 class="text-xs text-amber-600 mb-3 font-bold tracking-wider"><i class="fas fa-exclamation-triangle mr-1"></i>旅遊禁忌 & 注意</h4>
                  <ul class="text-xs text-jp-text space-y-2 list-disc pl-4 font-medium leading-relaxed">
+                     <li><strong class="text-purple-600">買酒時間限制</strong>：超商/超市僅 <span class="font-bold">11:00-14:00</span> 與 <span class="font-bold">17:00-24:00</span> 可販售酒精飲品。佛節全日禁酒。</li>
                      <li><strong class="text-red-500">電子菸全泰國違法</strong>：攜帶或使用皆可能面臨高額罰款或監禁，切勿嘗試。</li>
                      <li><strong class="text-green-600">大麻相關</strong>：雖已除罪化，但在公共場所吸食仍屬違法擾民，且不可攜帶出境回台。</li>
                      <li><strong class="text-jp-blue">寺廟穿著</strong>：參觀鄭王廟、臥佛寺等，不可穿無袖、短褲/短裙 (需過膝)。</li>
@@ -332,7 +333,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS FOR ALL SPOTS (V13) ---
+    // --- UPDATED DATA WITH DEEP DESCRIPTIONS FOR ALL SPOTS (V14) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -624,9 +625,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v13 to FORCE DATA RELOAD
-    function saveData() { localStorage.setItem('bkk_2025_v13', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v13'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v14 to FORCE DATA RELOAD
+    function saveData() { localStorage.setItem('bkk_2025_v14', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v14'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
@@ -668,7 +669,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v13'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v14'); location.reload(); } }
 </script>
 </body>
 </html>
