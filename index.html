@@ -20,11 +20,11 @@
                         'jp-blue': '#6B8EAD',
                         'jp-green': '#8DA399',
                         'jp-red': '#D67D7D',
-                        'mag-paper': '#FFFBF0', // 雜誌紙張色
+                        'mag-paper': '#FFFBF0',
                     },
                     fontFamily: {
                         sans: ['"Zen Kaku Gothic New"', 'sans-serif'],
-                        serif: ['"Noto Serif TC"', 'serif'], // 雜誌風字體
+                        serif: ['"Noto Serif TC"', 'serif'],
                     },
                     boxShadow: {
                         'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
@@ -65,9 +65,11 @@
         .edit-spot-btn { opacity: 0.3; transition: 0.2s; }
         .timeline-item:hover .edit-spot-btn { opacity: 1; }
         
-        /* Magazine Accordion */
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
+        /* Fix for Flash Issue: Manual Toggle classes */
+        .desc-content { display: none; }
+        .desc-content.show { display: block; animation: fadeIn 0.3s ease; }
+        .chevron-icon { transition: transform 0.3s ease; }
+        .chevron-icon.rotate { transform: rotate(180deg); }
     </style>
 </head>
 <body>
@@ -333,7 +335,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS FOR ALL SPOTS (V14) ---
+    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V15) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -423,7 +425,7 @@
         if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
     }
 
-    // Itinerary Logic with Deep Description
+    // Itinerary Logic with Manual Toggle (Fix for Flash issue)
     function renderDayTabs() {
         document.getElementById('day-tabs').innerHTML = state.itinerary.map((d, i) => `
             <button onclick="setDay(${i})" class="flex-shrink-0 px-4 py-2 rounded-xl border ${state.currentDay===i ? 'bg-jp-text text-white border-jp-text shadow-md' : 'bg-white text-gray-400 border-gray-100'}">
@@ -434,6 +436,21 @@
     }
     function setDay(i) { state.currentDay = i; renderDayTabs(); renderItinerary(); }
     
+    // NEW FUNCTION: Manually Toggle Deep Desc
+    function toggleDesc(btn) {
+        const content = btn.nextElementSibling;
+        const icon = btn.querySelector('.chevron-icon');
+        
+        // Toggle class
+        if (content.classList.contains('show')) {
+            content.classList.remove('show');
+            if(icon) icon.classList.remove('rotate');
+        } else {
+            content.classList.add('show');
+            if(icon) icon.classList.add('rotate');
+        }
+    }
+
     function renderItinerary() {
         const d = state.itinerary[state.currentDay];
         const c = document.getElementById('itinerary-content');
@@ -441,17 +458,17 @@
         if(!d.spots || d.spots.length === 0) { c.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">點擊 + 新增行程</div>`; return; }
         
         c.innerHTML = d.spots.map((s, idx) => {
-            // Check for Deep Description
+            // Updated to use Button + Div instead of Details/Summary to prevent conflict with Sortable.js
             const deepContent = s.deep_desc ? `
-                <details class="group/desc mt-2 border-t border-gray-100 pt-2 transition-all">
-                    <summary class="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-jp-accent select-none list-none outline-none">
+                <div class="mt-2 border-t border-gray-100 pt-2">
+                    <button onclick="toggleDesc(this)" class="w-full text-left flex items-center gap-2 cursor-pointer text-[10px] font-bold text-jp-accent outline-none">
                         <span class="bg-mag-paper px-2 py-1 rounded border border-amber-100 hover:bg-amber-50 transition"><i class="fas fa-book-open mr-1"></i>景點故事</span>
-                        <i class="fas fa-chevron-down text-xs group-open/desc:rotate-180 transition-transform duration-300"></i>
-                    </summary>
-                    <div class="mt-2 text-xs text-jp-text leading-relaxed font-serif bg-mag-paper p-3 rounded-lg border-l-2 border-jp-accent shadow-sm animate-fadeIn">
+                        <i class="fas fa-chevron-down text-xs chevron-icon"></i>
+                    </button>
+                    <div class="desc-content mt-2 text-xs text-jp-text leading-relaxed font-serif bg-mag-paper p-3 rounded-lg border-l-2 border-jp-accent shadow-sm">
                         ${s.deep_desc}
                     </div>
-                </details>
+                </div>
             ` : '';
 
             return `
@@ -625,9 +642,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v14 to FORCE DATA RELOAD
-    function saveData() { localStorage.setItem('bkk_2025_v14', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v14'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v15 to FORCE DATA RELOAD
+    function saveData() { localStorage.setItem('bkk_2025_v15', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v15'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
@@ -669,7 +686,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v14'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v15'); location.reload(); } }
 </script>
 </body>
 </html>
