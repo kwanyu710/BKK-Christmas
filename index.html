@@ -86,8 +86,8 @@
             <div class="flex gap-4 mb-5 relative z-10">
                 <div class="flex-1 bg-gray-50/50 rounded-2xl p-3 flex flex-col justify-between h-24">
                     <span class="text-[10px] text-gray-400">匯率 (TWD/THB)</span>
-                    <span class="text-2xl font-bold text-jp-text mt-1">0.92</span>
-                    <span class="text-[10px] text-green-600 mt-auto">免稅額提示: 2000B</span>
+                    <span class="text-2xl font-bold text-jp-text mt-1" id="dash-rate">loading...</span>
+                    <span class="text-[10px] text-green-600 mt-auto">即時匯率更新</span>
                 </div>
                 <div class="flex-1 bg-gray-50/50 rounded-2xl p-3 flex flex-col justify-between h-24">
                     <span class="text-[10px] text-gray-400">公費錢包</span>
@@ -170,14 +170,20 @@
                 <p class="text-xl font-bold text-jp-accent" id="acc-fund-display">฿ 0</p>
             </div>
             <h2 class="text-lg font-bold text-jp-text mb-4">新增記帳</h2>
+            
             <div class="flex justify-between gap-2 overflow-x-auto hide-scrollbar mb-4" id="cat-container"></div>
-            <div class="flex items-end gap-3 mb-4 border-b border-gray-100 pb-2">
-                 <div class="flex bg-gray-50 rounded-lg p-1">
-                    <button onclick="setCurrency('TWD')" id="cur-twd" class="px-3 py-1 text-xs rounded text-gray-400 font-bold">TWD</button>
-                    <button onclick="setCurrency('THB')" id="cur-thb" class="px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold">THB</button>
+            
+            <div class="flex gap-2 mb-4">
+                 <div class="flex bg-gray-50 rounded-lg p-1 h-14 items-center">
+                    <button onclick="setCurrency('TWD')" id="cur-twd" class="px-3 py-2 text-xs rounded text-gray-400 font-bold h-full">TWD</button>
+                    <button onclick="setCurrency('THB')" id="cur-thb" class="px-3 py-2 text-xs rounded bg-white shadow-sm text-jp-text font-bold h-full">THB</button>
                 </div>
-                <input type="number" id="amt-input" placeholder="0" class="flex-1 text-right text-3xl font-bold text-jp-text bg-transparent outline-none">
+                <div class="flex-1 bg-gray-50 rounded-xl px-4 flex flex-col justify-center relative">
+                    <span class="text-[10px] text-gray-400 absolute top-2 right-4">金額</span>
+                    <input type="number" id="amt-input" placeholder="0" class="w-full text-right text-3xl font-bold text-jp-text bg-transparent outline-none p-0">
+                </div>
             </div>
+
             <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
                     <p class="text-xs text-gray-400">付款人</p>
@@ -258,7 +264,7 @@
             </div>
         </div>
         <div class="mt-8 text-center">
-             <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置 App (慎用)</button>
+             <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置所有 App 資料 (慎用)</button>
         </div>
     </div>
 
@@ -361,7 +367,7 @@
     ];
 
     let state = {
-        users: ['小朱', '簡哥', '公費包', '團員A'],
+        users: ['冠仔', '小芳', '玠宇', '婕茹', '芝伶', '公費包'],
         fundBalance: 0,
         currency: 'THB',
         transactions: [],
@@ -375,6 +381,7 @@
             loadData();
             updateDate();
             fetchWeather();
+            fetchExchangeRate();
             renderDayTabs();
             renderItinerary();
             renderAccCats();
@@ -390,6 +397,7 @@
 
     // --- LOGIC ---
     function updateDate() { document.getElementById('current-date-display').innerText = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}); }
+    
     async function fetchWeather() {
         try {
             const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=13.75&longitude=100.50&current_weather=true');
@@ -397,6 +405,19 @@
             document.getElementById('header-weather').innerHTML = `${Math.round(data.current_weather.temperature)}°C <i class="fas fa-sun text-yellow-400"></i>`;
         } catch { document.getElementById('header-weather').innerText = "28°C"; }
     }
+
+    async function fetchExchangeRate() {
+        try {
+            // Fetching THB base to see how much TWD is 1 THB
+            const res = await fetch('https://api.exchangerate-api.com/v4/latest/THB');
+            const data = await res.json();
+            const rate = data.rates.TWD; // 1 THB = X TWD (e.g., 0.92)
+            document.getElementById('dash-rate').innerText = rate.toFixed(2);
+        } catch {
+            document.getElementById('dash-rate').innerText = "0.92";
+        }
+    }
+
     function translateThai() {
         const txt = document.getElementById('thai-input').value;
         if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
@@ -484,7 +505,7 @@
     function setCat(n, el) { acc.cat = n; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
     function renderPayers() { document.getElementById('payer-container').innerHTML = state.users.map(u => `<button onclick="setPayer('${u}', this)" class="payer-btn ${u==='公費包'?'active':''} px-3 py-1 bg-gray-50 text-gray-400 rounded-lg text-xs border border-transparent">${u}</button>`).join(''); }
     function setPayer(u, el) { acc.payer = u; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
-    function setCurrency(c) { acc.cur = c; document.getElementById('cur-twd').className = c==='TWD' ? "px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold" : "px-3 py-1 text-xs rounded text-gray-400 font-bold"; document.getElementById('cur-thb').className = c==='THB' ? "px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold" : "px-3 py-1 text-xs rounded text-gray-400 font-bold"; }
+    function setCurrency(c) { acc.cur = c; document.getElementById('cur-twd').className = c==='TWD' ? "px-3 py-2 text-xs rounded bg-white shadow-sm text-jp-text font-bold h-full" : "px-3 py-2 text-xs rounded text-gray-400 font-bold h-full"; document.getElementById('cur-thb').className = c==='THB' ? "px-3 py-2 text-xs rounded bg-white shadow-sm text-jp-text font-bold h-full" : "px-3 py-2 text-xs rounded text-gray-400 font-bold h-full"; }
     function setSplit(t) { acc.split = t; document.querySelectorAll('.split-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-gray-400'); }); document.getElementById(`split-${t}`).classList.add('active'); document.getElementById(`split-${t}`).classList.remove('text-gray-400'); }
 
     function submitTx() {
@@ -536,8 +557,8 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    function saveData() { localStorage.setItem('bkk_2025_v6', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v6'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    function saveData() { localStorage.setItem('bkk_2025_v7', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v7'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function syncToCloud(action) {
@@ -558,7 +579,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v6'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v7'); location.reload(); } }
 </script>
 </body>
 </html>
