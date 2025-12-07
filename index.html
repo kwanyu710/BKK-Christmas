@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 曼谷聖誕跨年 - 泰廢了 (Dashboard版)</title>
+    <title>2025 曼谷聖誕跨年 - 泰廢了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
@@ -68,8 +68,8 @@
     
     <header class="sticky top-0 z-50 bg-[#F9F8F4]/95 backdrop-blur-sm px-5 py-4 flex justify-between items-end border-b border-gray-100">
         <div>
-            <p class="text-[10px] text-gray-400 tracking-widest mb-1">DEC 23 - DEC 27</p>
-            <h1 class="text-xl font-bold text-jp-text tracking-wide leading-tight">BANGKOK<span class="text-jp-accent">.</span></h1>
+            <p class="text-[10px] text-gray-400 tracking-widest mb-1">DEC 23 - DEC 28</p>
+            <h1 class="text-xl font-bold text-jp-text tracking-wide leading-tight">2025 曼谷聖誕跨年<br><span class="text-jp-accent text-lg">- 泰廢了 -</span></h1>
         </div>
         <div class="text-center">
              <span class="block text-[10px] text-gray-400">曼谷</span>
@@ -153,12 +153,12 @@
              <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-blue mb-2">
                  <p class="text-xs font-bold text-jp-blue">12/23 - 12/25 (唐人街)</p>
                  <p class="text-sm font-bold text-jp-text">B2 唐人街耀華力尊尚飯店</p>
-                 <a href="https://www.google.com/maps/search/?api=1&query=B2+唐人街耀華力尊尚飯店" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+                 <a href="https://www.google.com/maps/search/?api=1&query=B2+China+Town+Yaowarat+Premier+Hotel" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
              </div>
              <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-accent">
                  <p class="text-xs font-bold text-jp-accent">12/25 - 12/27 (通羅)</p>
                  <p class="text-sm font-bold text-jp-text">曼谷茉莉花59號飯店</p>
-                 <a href="https://www.google.com/maps/search/?api=1&query=曼谷茉莉花59號飯店" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+                 <a href="https://www.google.com/maps/search/?api=1&query=Jasmine+59+Hotel" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
              </div>
         </div>
     </div>
@@ -311,20 +311,53 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // Default Data
+    // --- FULL DATA FROM MANGO ITINERARY.TXT ---
     const DEFAULT_ITINERARY = [
-        { day: 1, date: "12/23 (二)", desc: "抵達曼谷", spots: [
-            { time: "18:00", name: "高雄機場出發", desc: "泰國亞航 FD235 ✈️", icon: "fa-plane", color: "text-blue-500" },
-            { time: "22:30", name: "機場包車接機", desc: "前往 B2 飯店", icon: "fa-car", color: "text-green-600", highlight: true },
-            { time: "Late", name: "唐人街宵夜", desc: "覓食", icon: "fa-utensils", color: "text-orange-500", keyword: "曼谷唐人街美食" }
-        ]},
-        { day: 2, date: "12/24 (三)", desc: "舊城古蹟", spots: [
-            { time: "10:00", name: "鄭王廟", desc: "古蹟巡禮", icon: "fa-gopuram", color: "text-yellow-600", keyword: "鄭王廟 拍照" },
-            { time: "19:00", name: "遊船晚餐", desc: "昭披耶河", icon: "fa-ship", color: "text-blue-600", keyword: "昭披耶河遊船推薦" }
-        ]},
-        { day: 3, date: "12/25 (四)", desc: "通羅時尚", spots: [] },
-        { day: 4, date: "12/26 (五)", desc: "水上市場", spots: [] },
-        { day: 5, date: "12/27 (六)", desc: "返台", spots: [] }
+        { 
+            day: 1, date: "12/23 (二)", desc: "抵達曼谷", 
+            spots: [
+                { time: "18:00", name: "高雄機場出發", desc: "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", icon: "fa-plane", color: "text-blue-500" },
+                { time: "22:30", name: "機場包車接機", desc: "前往 B2 飯店 (車程約30分)", icon: "fa-car", color: "text-green-600", highlight: true },
+                { time: "Late", name: "唐人街宵夜", desc: "Check-in 後覓食", icon: "fa-utensils", color: "text-orange-500", keyword: "曼谷唐人街美食" },
+                { time: "Sleep", name: "B2 唐人街飯店", desc: "入住休息", icon: "fa-bed", color: "text-jp-blue" }
+            ]
+        },
+        { 
+            day: 2, date: "12/24 (三)", desc: "舊城古蹟巡禮", 
+            spots: [
+                { time: "Day", name: "石龍軍路", desc: "文青散策 / 美食 (豬腳飯、仁和園)", icon: "fa-walking", color: "text-gray-500", keyword: "石龍軍路美食" },
+                { time: "10:00", name: "臥佛寺 & 鄭王廟", desc: "必拍古蹟", icon: "fa-gopuram", color: "text-yellow-600", keyword: "鄭王廟 拍照" },
+                { time: "12:00", name: "王朗市場", desc: "在地市集", icon: "fa-store", color: "text-orange-500", keyword: "王朗市場" },
+                { time: "19:00", name: "昭披耶河晚餐", desc: "River City 郵輪", icon: "fa-ship", color: "text-blue-600", keyword: "昭披耶河遊船推薦" }
+            ]
+        },
+        { 
+            day: 3, date: "12/25 (四)", desc: "通羅時尚漫遊", 
+            spots: [
+                { time: "09:00", name: "傳統早餐", desc: "益生甫記 / 安樂園", icon: "fa-coffee", color: "text-brown-500", keyword: "曼谷 安樂園" },
+                { time: "10:30", name: "嵩越路", desc: "文青街拍", icon: "fa-camera", color: "text-pink-500", keyword: "嵩越路" },
+                { time: "12:00", name: "換飯店", desc: "前往 Jasmine 59 Hotel (通羅)", icon: "fa-suitcase", color: "text-jp-blue", highlight: true },
+                { time: "14:00", name: "石龍軍路(上)", desc: "32Bar", icon: "fa-glass-cheers", color: "text-purple-500" },
+                { time: "Eve", name: "百貨 / 考山路", desc: "Iconsiam / Central World / 考山路", icon: "fa-shopping-bag", color: "text-jp-text" }
+            ]
+        },
+        { 
+            day: 4, date: "12/26 (五)", desc: "水上市場一日遊", 
+            spots: [
+                { time: "08:00", name: "包車出發", desc: "飯店大廳集合 (準時!)", icon: "fa-car", color: "text-red-500", highlight: true },
+                { time: "10:00", name: "美功鐵道市場", desc: "看火車進站", icon: "fa-train", color: "text-orange-500" },
+                { time: "12:00", name: "丹嫩莎水上市場", desc: "手搖船體驗", icon: "fa-water", color: "text-blue-400" },
+                { time: "14:00", name: "樹中廟", desc: "靈驗古廟", icon: "fa-vihara", color: "text-yellow-600" },
+                { time: "16:00", name: "返回曼谷", desc: "回飯店或按摩", icon: "fa-home", color: "text-gray-500" }
+            ]
+        },
+        { 
+            day: 5, date: "12/27 (六)", desc: "返台 / 自由", 
+            spots: [
+                { time: "Free", name: "自由活動", desc: "最後採買 / 按摩", icon: "fa-smile", color: "text-green-500" },
+                { time: "Flight", name: "前往機場", desc: "預備返台", icon: "fa-plane-departure", color: "text-blue-500" }
+            ]
+        }
     ];
 
     let state = {
@@ -332,7 +365,7 @@
         fundBalance: 0,
         currency: 'THB',
         transactions: [],
-        checklist: [{ title: "證件", items: [{name: "護照", checked: true}] }],
+        checklist: [{ title: "證件", items: [{name: "護照", checked: true}, {name: "eSIM", checked: false}, {name: "保險單", checked: false}] }],
         itinerary: DEFAULT_ITINERARY, 
         currentDay: 0
     };
@@ -503,8 +536,8 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    function saveData() { localStorage.setItem('bkk_2025_v5', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v5'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    function saveData() { localStorage.setItem('bkk_2025_v6', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v6'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function syncToCloud(action) {
@@ -525,7 +558,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v5'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v6'); location.reload(); } }
 </script>
 </body>
 </html>
