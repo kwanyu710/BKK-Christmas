@@ -3,623 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 曼谷聖誕跨年 - 泰廢了</title>
+    <title>2025 曼谷聖誕跨年</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
+        // ★★★ 請在此填入您的 Google Apps Script 網址 ★★★
+        const API_URL = "https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec";
+        
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         'jp-bg': '#F9F8F4',
                         'jp-text': '#4A4A4A',
-                        'jp-accent': '#C6A568', // 金色
-                        'jp-blue': '#6B8EAD',
-                        'jp-green': '#8DA399',
-                        'jp-red': '#D67D7D',
+                        'jp-accent': '#C6A568',
+                        'btn-nav': '#DCECF5', // 導航按鈕底色
+                        'btn-search': '#E0F7FA', // 搜尋按鈕底色
                     },
-                    fontFamily: {
-                        sans: ['"Zen Kaku Gothic New"', '"Noto Sans TC"', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
-                        'gold': '0 4px 15px rgba(198, 165, 104, 0.15)',
-                    }
+                    fontFamily: { sans: ['"Zen Kaku Gothic New"', '"Noto Sans TC"', 'sans-serif'] },
+                    boxShadow: { 'card': '0 4px 20px rgba(0, 0, 0, 0.05)' }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #F0F0F0; font-family: 'Zen Kaku Gothic New', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
-        .app-container { background-color: #F9F8F4; max-width: 430px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px; overflow-x: hidden; position: relative; }
+        body { background-color: #F0F0F0; -webkit-tap-highlight-color: transparent; }
+        .app-container { background-color: #F9F8F4; max-width: 430px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .section { display: none; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Timeline */
-        .timeline-item { position: relative; padding-left: 24px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; }
-        .timeline-item:last-child { border-left: 2px solid transparent; }
-        .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; }
-        .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
+        /* Loading Spinner */
+        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:999; display:flex; justify-content:center; align-items:center; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #C6A568; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Accounting Buttons */
-        .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
-        .payer-btn.active { background-color: #FFF9E6; border: 1px solid #C6A568; color: #C6A568; font-weight: bold; }
-        .split-btn.active { background-color: #4A4A4A; color: white; }
+        /* 仿截圖按鈕樣式 */
+        .action-btn { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: bold; width: 48%; }
+        .btn-nav { background-color: #DCECF5; color: #2C3E50; }
+        .btn-search { background-color: #E0F7FA; color: #006064; }
 
-        /* Navbar Active State */
-        .nav-btn.active { color: #C6A568; }
-        .nav-btn.active i { transform: scale(1.1); transition: 0.2s; }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
+        /* 記帳分類按鈕 */
+        .cat-btn.active { border: 2px solid #C6A568; background-color: #FFF9E6; color: #C6A568; }
     </style>
 </head>
 <body>
+
+<div id="loader"><div class="spinner"></div></div>
 
 <div class="app-container">
     
     <header class="sticky top-0 z-50 bg-[#F9F8F4]/95 backdrop-blur-sm px-5 py-4 flex justify-between items-end border-b border-gray-100">
         <div>
             <p class="text-[10px] text-gray-400 tracking-widest mb-1">DEC 23 - DEC 27</p>
-            <h1 class="text-xl font-bold text-jp-text tracking-wide leading-tight">2025 曼谷聖誕跨年<br><span class="text-jp-accent text-lg">- 泰廢了 -</span></h1>
+            <h1 class="text-xl font-bold text-jp-text tracking-wide">2025 曼谷跨年 <span class="text-xs bg-jp-accent text-white px-2 rounded-full">Sync</span></h1>
         </div>
-        <div class="text-center">
-             <span class="block text-[10px] text-gray-400">曼谷</span>
-             <span class="text-sm font-medium" id="header-weather">Loading...</span>
+        <div class="text-center" onclick="fetchData()">
+             <span class="text-xs text-gray-400"><i class="fas fa-sync-alt"></i> 更新</span>
+             <span class="block text-lg font-bold text-jp-accent">28°C</span>
         </div>
     </header>
 
     <div id="tab-home" class="section active px-5 py-4">
-        
-        <div class="bg-white rounded-2xl p-4 shadow-soft mb-6">
-            <h3 class="text-sm font-bold text-jp-text mb-2">求生泰語翻譯</h3>
-            <div class="flex gap-2">
-                <input type="text" id="thai-input" placeholder="輸入中文 (例: 不要香菜)" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-jp-accent">
-                <button onclick="translateThai()" class="w-10 h-10 bg-jp-green/10 rounded-lg flex items-center justify-center text-jp-green active:scale-95 transition">
-                    <i class="fas fa-volume-up"></i>
-                </button>
+        <div class="bg-white rounded-2xl p-4 shadow-card mb-4 flex justify-between items-center">
+            <div>
+                <p class="text-xs text-gray-400">公費錢包 (THB)</p>
+                <h2 class="text-3xl font-bold text-jp-text mt-1" id="dash-fund">฿ 0</h2>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2 text-right">點擊喇叭開啟 Google 翻譯發音</p>
+            <div class="text-right">
+                <p class="text-xs text-green-500">匯率: 0.92</p>
+                <p class="text-[10px] text-gray-300">免稅額: 2000B</p>
+            </div>
         </div>
-
-        <h3 class="text-sm font-bold text-gray-400 mb-3 ml-1 uppercase tracking-wider">Quick Access</h3>
-        <div class="grid grid-cols-2 gap-3 mb-20">
-            <button onclick="switchTab('tab-itinerary')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 relative overflow-hidden group active:scale-95 transition">
-                <div class="absolute top-0 right-0 w-12 h-12 bg-jp-blue/10 rounded-full -mr-4 -mt-4"></div>
-                <i class="fas fa-map-marked-alt text-jp-blue text-xl relative z-10"></i>
-                <div>
-                    <span class="text-sm font-bold block text-jp-text">行程規劃</span>
-                    <span class="text-xs text-gray-400 font-sans" id="current-date-display">Dec 23</span>
-                </div>
-            </button>
-
-            <button onclick="switchTab('tab-account')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 border border-jp-accent/20 active:scale-95 transition">
-                <div class="flex justify-between">
-                    <i class="fas fa-calculator text-jp-red text-xl"></i>
-                    <span class="text-[10px] bg-gray-100 px-1 rounded text-gray-500" id="dash-fund">公費: $0</span>
-                </div>
-                <div>
-                    <span class="text-sm font-bold block text-jp-text">智慧記帳</span>
-                    <span class="text-xs text-gray-400">點擊記帳</span>
-                </div>
-            </button>
-
-             <button onclick="switchTab('tab-checklist')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 active:scale-95 transition">
-                <i class="fas fa-tasks text-jp-accent text-xl"></i>
-                <div>
-                    <span class="text-sm font-bold block text-jp-text">行李清單</span>
-                    <span class="text-xs text-gray-400" id="home-check-progress">完成度 0%</span>
-                </div>
-            </button>
+        
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div onclick="switchTab('tab-itinerary')" class="bg-white p-4 rounded-xl shadow-card flex flex-col items-center justify-center gap-2 active:scale-95 transition">
+                <i class="fas fa-map-marked-alt text-2xl text-jp-blue"></i>
+                <span class="font-bold text-jp-text">行程規劃</span>
+            </div>
+            <div onclick="switchTab('tab-account')" class="bg-white p-4 rounded-xl shadow-card flex flex-col items-center justify-center gap-2 active:scale-95 transition">
+                <i class="fas fa-calculator text-2xl text-jp-red"></i>
+                <span class="font-bold text-jp-text">新增記帳</span>
+            </div>
         </div>
     </div>
 
     <div id="tab-itinerary" class="section pb-24">
-        <div class="sticky top-[72px] z-40 bg-[#F9F8F4] px-5 py-2 mb-2 shadow-sm">
-            <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2" id="day-tabs">
+        <div class="sticky top-[72px] z-40 bg-[#F9F8F4] px-5 py-2 mb-2 flex justify-between items-center shadow-sm">
+            <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-1" id="day-tabs">
                 </div>
+            <button onclick="openEditModal()" class="w-8 h-8 bg-jp-text text-white rounded-full flex items-center justify-center shadow"><i class="fas fa-plus"></i></button>
         </div>
 
-        <div id="itinerary-content" class="px-5 space-y-4 min-h-[50vh]">
+        <div id="itinerary-content" class="px-5 space-y-4">
             </div>
-
-        <div class="px-5 mt-8 mb-4">
-             <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase">住宿資訊</h3>
-             <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-blue mb-2">
-                 <p class="text-xs font-bold text-jp-blue">12/23 - 12/25 (唐人街)</p>
-                 <p class="text-sm font-bold text-jp-text">B2 唐人街耀華力尊尚飯店</p>
-                 <a href="https://maps.app.goo.gl/example" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
-             </div>
-             <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-accent">
-                 <p class="text-xs font-bold text-jp-accent">12/25 - 12/27 (通羅)</p>
-                 <p class="text-sm font-bold text-jp-text">曼谷茉莉花59號飯店</p>
-                 <a href="https://maps.app.goo.gl/example" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
-             </div>
-        </div>
-    </div>
-
-    <div id="tab-guide" class="section px-5 py-4 pb-24">
-        <h2 class="text-xl font-bold mb-4">深度導覽</h2>
-        
-        <div class="bg-white rounded-2xl overflow-hidden shadow-soft mb-6">
-            <div class="h-32 bg-gray-200 relative">
-                 <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=100.490%2C13.740%2C100.500%2C13.750&amp;layer=mapnik" style="pointer-events: none;"></iframe>
-                 <div class="absolute bottom-0 left-0 bg-black/50 text-white text-xs px-2 py-1">鄭王廟周邊</div>
-            </div>
-            <div class="p-4">
-                <h3 class="text-lg font-bold text-jp-text mb-2">鄭王廟 (Wat Arun)</h3>
-                <p class="text-sm text-gray-600 leading-relaxed mb-2">
-                    又稱黎明寺。它是泰國境內規模最大的大乘舍利式塔，外觀潔白莊嚴，鑲嵌了無數彩色陶瓷片，在陽光下閃耀。
-                </p>
-                <div class="bg-jp-bg p-2 rounded text-xs text-gray-500">
-                    <span class="font-bold text-jp-accent">💡 冷知識：</span> 鄭王廟是紀念泰國第41代君王、民族英雄「鄭昭」的寺廟。
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 shadow-soft">
-            <h3 class="text-lg font-bold text-jp-text mb-2">石龍軍路 (Charoen Krung)</h3>
-            <p class="text-sm text-gray-600 leading-relaxed">
-                曼谷第一條西式馬路。這裡新舊交融，有許多老字號美食（如豬腳飯、仁和園），也有新創的文青咖啡廳。
-            </p>
-            <div class="mt-2 flex gap-2">
-                <span class="text-[10px] bg-red-50 text-red-500 px-2 py-1 rounded">必吃豬腳飯</span>
-                <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded">32Bar 爵士樂</span>
-            </div>
-        </div>
     </div>
 
     <div id="tab-account" class="section px-4 py-4 pb-24">
+        <h2 class="text-center font-bold text-lg text-jp-text mb-4">新增記帳</h2>
         
-        <a href="https://docs.google.com/spreadsheets" target="_blank" class="block bg-green-50 border border-green-200 rounded-xl p-3 mb-4 flex items-center justify-between shadow-sm active:scale-95 transition">
-             <div class="flex items-center gap-3">
-                 <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white"><i class="fas fa-file-excel"></i></div>
-                 <div>
-                     <h4 class="text-sm font-bold text-jp-text">Google Sheet 同步表</h4>
-                     <p class="text-[10px] text-gray-500">多人即時記帳建議用此 (點擊開啟)</p>
-                 </div>
-             </div>
-             <i class="fas fa-external-link-alt text-gray-400 text-xs"></i>
-        </a>
-
-        <div class="bg-white rounded-2xl shadow-gold p-5 border border-gray-50 relative">
-            <div class="absolute top-4 right-4 text-right">
-                <p class="text-[10px] text-gray-400">公費包餘額 (THB)</p>
-                <p class="text-xl font-bold text-jp-accent" id="acc-fund-display">฿ 0</p>
-            </div>
-
-            <h2 class="text-lg font-bold text-jp-text mb-4">新增記帳</h2>
-
-            <div class="flex justify-between gap-2 overflow-x-auto hide-scrollbar mb-4" id="cat-container"></div>
-
-            <div class="flex items-end gap-3 mb-4 border-b border-gray-100 pb-2">
-                <div class="flex bg-gray-50 rounded-lg p-1">
-                    <button onclick="setCurrency('TWD')" id="cur-twd" class="px-3 py-1 text-xs rounded text-gray-400 font-bold">TWD</button>
-                    <button onclick="setCurrency('THB')" id="cur-thb" class="px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold">THB</button>
+        <div class="bg-white rounded-3xl shadow-card p-6 relative">
+            
+            <p class="text-xs text-gray-400 mb-2">分類</p>
+            <div class="flex justify-between gap-2 mb-6" id="cat-container">
                 </div>
-                <input type="number" id="amt-input" placeholder="0" class="flex-1 text-right text-3xl font-bold text-jp-text bg-transparent outline-none">
-            </div>
 
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-2">
-                    <p class="text-xs text-gray-400">付款人</p>
-                    <button onclick="editUsers()" class="text-[10px] text-blue-400 underline">編輯名單</button>
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-6">
+                <div class="flex gap-1">
+                    <span class="text-xs font-bold text-gray-300 px-2 py-1 rounded">JPY</span>
+                    <span class="text-xs font-bold bg-white shadow-sm border px-2 py-1 rounded text-jp-text">THB</span>
                 </div>
-                <div class="flex flex-wrap gap-2" id="payer-container"></div>
+                <input type="number" id="amt-input" placeholder="0" class="text-right text-4xl font-bold text-jp-text bg-transparent w-full outline-none">
             </div>
 
-            <div class="mb-4">
-                <p class="text-xs text-gray-400 mb-2">分攤模式</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="setSplit('shared')" id="split-shared" class="split-btn active py-2 rounded-lg text-xs border border-gray-200">共同分攤 (扣公費/記帳)</button>
-                    <button onclick="setSplit('deposit')" id="split-deposit" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">公費入金 (存錢)</button>
-                    <button onclick="setSplit('own')" id="split-own" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">個人自付</button>
-                    <button onclick="setSplit('advance')" id="split-advance" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">幫人代墊</button>
+            <div class="flex justify-between items-center mb-2">
+                <p class="text-xs text-gray-400">付款人</p>
+                <div class="flex items-center gap-1">
+                    <span class="text-[10px] text-jp-accent">公費包模式</span>
+                    <i class="fas fa-toggle-on text-jp-accent text-lg"></i>
                 </div>
             </div>
+            <div class="flex gap-2 mb-6 overflow-x-auto" id="payer-container">
+                </div>
 
-            <div class="flex gap-2 mb-4">
-                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-400"><i class="fas fa-camera"></i></button>
-                <input type="text" id="note-input" placeholder="備註 (如: 7-11)" class="flex-1 bg-gray-50 rounded-lg px-3 text-sm outline-none">
+            <div class="bg-gray-50 rounded-xl p-1 grid grid-cols-2 gap-1 mb-6">
+                <button onclick="setSplit('shared')" id="split-shared" class="py-2 rounded-lg text-xs font-bold bg-white shadow-sm text-jp-text">共同分攤</button>
+                <button onclick="setSplit('deposit')" id="split-deposit" class="py-2 rounded-lg text-xs text-gray-400">公費入金</button>
             </div>
+
+            <input type="text" id="note-input" placeholder="備註說明..." class="w-full bg-gray-50 rounded-lg p-3 text-sm mb-4 outline-none">
 
             <button onclick="submitTx()" class="w-full bg-jp-text text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition">新增紀錄</button>
         </div>
-
-        <div class="mt-6">
-            <div class="flex justify-between items-center mb-2 px-1">
-                <h3 class="text-sm font-bold text-gray-500">近期紀錄</h3>
-                <button onclick="clearTx()" class="text-xs text-red-300">清空</button>
-            </div>
-            <div id="tx-history" class="space-y-2 pb-10"></div>
-        </div>
-    </div>
-    
-    <div id="tab-checklist" class="section px-5 py-4 pb-24">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">行李清單</h2>
-            <div class="flex gap-2">
-                <button onclick="addChecklistCategory()" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"><i class="fas fa-folder-plus text-xs"></i></button>
-                <button onclick="addChecklistItem()" class="w-8 h-8 rounded-full bg-jp-accent text-white flex items-center justify-center shadow-md"><i class="fas fa-plus text-xs"></i></button>
-            </div>
-        </div>
-        <div id="checklist-container"></div>
-    </div>
-
-    <div id="tab-settings" class="section px-5 py-4 pb-24">
-        <h2 class="text-xl font-bold mb-6">資料同步 & 設定</h2>
         
-        <div class="bg-white rounded-2xl shadow-soft p-5 mb-6 border border-jp-blue/20">
-            <h3 class="font-bold text-jp-blue mb-2"><i class="fas fa-sync-alt mr-2"></i>資料同步 (無伺服器版)</h3>
-            <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-                因為本網頁沒有後端資料庫，若要與朋友同步資料：<br>
-                1. 點擊「匯出」複製代碼。<br>
-                2. 傳 Line 給朋友。<br>
-                3. 朋友複製代碼，點擊「匯入」。
-            </p>
-            <div class="flex gap-3">
-                <button onclick="exportData()" class="flex-1 bg-jp-blue text-white py-3 rounded-lg text-sm shadow hover:opacity-90">
-                    <i class="fas fa-copy mr-1"></i> 匯出資料
-                </button>
-                <button onclick="openImportModal()" class="flex-1 bg-gray-600 text-white py-3 rounded-lg text-sm shadow hover:opacity-90">
-                    <i class="fas fa-paste mr-1"></i> 匯入資料
-                </button>
+        <div class="mt-6 px-2" id="tx-history">
             </div>
-        </div>
+    </div>
 
-        <div class="bg-white rounded-2xl shadow-soft p-5">
-            <h3 class="font-bold text-jp-text mb-3">緊急聯絡電話</h3>
-            <div class="space-y-2">
-                <div class="flex justify-between text-sm border-b border-gray-50 pb-2"><span>觀光警察</span><span class="font-bold text-red-500">1155</span></div>
-                <div class="flex justify-between text-sm border-b border-gray-50 pb-2"><span>救護車</span><span class="font-bold text-red-500">1669</span></div>
-                <div class="flex justify-between text-sm"><span>駐泰代表處</span><span class="font-bold text-blue-500">+66-81-666-4006</span></div>
+    <div id="edit-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl">
+            <h3 class="font-bold text-lg mb-4">編輯行程</h3>
+            <input type="hidden" id="edit-id">
+            <div class="space-y-3">
+                <input id="edit-day" type="number" placeholder="Day (1-5)" class="w-full p-2 border rounded">
+                <input id="edit-time" type="text" placeholder="時間 (例: 10:00)" class="w-full p-2 border rounded">
+                <input id="edit-name" type="text" placeholder="景點名稱" class="w-full p-2 border rounded">
+                <input id="edit-keyword" type="text" placeholder="搜尋關鍵字 (Google用)" class="w-full p-2 border rounded bg-blue-50">
+                <input id="edit-desc" type="text" placeholder="描述 / 攻略備註" class="w-full p-2 border rounded">
             </div>
-        </div>
-        
-        <div class="mt-8 text-center">
-             <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置所有 App 資料 (慎用)</button>
+            <div class="flex gap-2 mt-4">
+                <button onclick="deleteItineraryItem()" class="px-4 py-2 text-red-500 text-sm">刪除</button>
+                <div class="flex-1"></div>
+                <button onclick="closeEditModal()" class="px-4 py-2 text-gray-500 text-sm">取消</button>
+                <button onclick="saveItineraryItem()" class="px-4 py-2 bg-jp-text text-white rounded text-sm">儲存</button>
+            </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-6 left-5 right-5 h-16 bg-white/95 backdrop-blur rounded-2xl flex justify-around items-center shadow-gold z-50 border border-gray-100">
-        <button onclick="switchTab('tab-home')" class="nav-btn active flex flex-col items-center gap-1 text-gray-400" data-target="tab-home">
-            <i class="fas fa-home text-lg"></i><span class="text-[10px]">首頁</span>
-        </button>
-        <button onclick="switchTab('tab-itinerary')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-itinerary">
-            <i class="fas fa-map-marked-alt text-lg"></i><span class="text-[10px]">行程</span>
-        </button>
-        <div class="relative -top-6">
-            <button onclick="switchTab('tab-account')" class="w-14 h-14 bg-jp-text rounded-full shadow-lg flex items-center justify-center text-white text-xl transform hover:scale-105 transition active:scale-95 border-4 border-[#F9F8F4]">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
-        <button onclick="switchTab('tab-checklist')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-checklist">
-            <i class="fas fa-check-circle text-lg"></i><span class="text-[10px]">清單</span>
-        </button>
-        <button onclick="switchTab('tab-settings')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-settings">
-            <i class="fas fa-cog text-lg"></i><span class="text-[10px]">我的</span>
-        </button>
+    <nav class="fixed bottom-6 left-5 right-5 h-16 bg-white/95 backdrop-blur rounded-2xl flex justify-around items-center shadow-card z-50 border border-gray-100">
+        <button onclick="switchTab('tab-home')" class="nav-btn text-jp-accent"><i class="fas fa-home text-lg"></i></button>
+        <button onclick="switchTab('tab-itinerary')" class="nav-btn text-gray-300"><i class="fas fa-map-marked-alt text-lg"></i></button>
+        <button onclick="switchTab('tab-account')" class="nav-btn text-gray-300"><i class="fas fa-wallet text-lg"></i></button>
     </nav>
-
-    <div id="import-modal" class="modal-overlay">
-        <div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl">
-            <h3 class="font-bold text-lg mb-2">貼上資料代碼</h3>
-            <textarea id="import-area" class="w-full h-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs mb-4" placeholder="請在此貼上朋友傳來的代碼..."></textarea>
-            <div class="flex gap-2">
-                <button onclick="closeModal('import-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
-                <button onclick="confirmImport()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定匯入</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="advance-modal" class="modal-overlay">
-        <div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl">
-            <h3 class="font-bold text-lg mb-2">幫誰代墊?</h3>
-            <div id="advance-list" class="space-y-2 mb-4"></div>
-            <div class="flex gap-2">
-                <button onclick="closeModal('advance-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
-                <button onclick="confirmAdvance()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button>
-            </div>
-        </div>
-    </div>
 
 </div>
 
 <script>
-    // --- DATA & STATE ---
-    const ITINERARY_DATA = [
-        {
-            day: 1, date: "12/23 (二)", desc: "抵達曼谷", 
-            spots: [
-                { time: "18:00", name: "高雄機場出發", desc: "泰國亞航 FD235 ✈️", icon: "fa-plane", color: "text-blue-500" },
-                { time: "21:30", name: "抵達廊曼機場", desc: "預計出關領行李", icon: "fa-plane-arrival", color: "text-blue-500" },
-                { time: "22:30", name: "機場包車接機", desc: "前往 B2 飯店 (車程約30分)", icon: "fa-car", color: "text-green-600", highlight: true },
-                { time: "Late", name: "唐人街宵夜", desc: "Check-in 後覓食", icon: "fa-utensils", color: "text-orange-500", link: "https://www.google.com/search?q=曼谷唐人街美食" }
-            ]
-        },
-        {
-            day: 2, date: "12/24 (三)", desc: "舊城古蹟巡禮", 
-            spots: [
-                { time: "Day", name: "石龍軍路", desc: "文青散策 / 美食", icon: "fa-walking", color: "text-gray-500", link: "https://www.google.com/maps/search/Charoen+Krung+Road" },
-                { time: "10:00", name: "臥佛寺 & 鄭王廟", desc: "必拍古蹟", icon: "fa-gopuram", color: "text-yellow-600", link: "https://www.google.com/maps/search/Wat+Arun" },
-                { time: "12:00", name: "王朗市場", desc: "在地市集午餐", icon: "fa-store", color: "text-orange-500", link: "https://www.google.com/maps/search/Wang+Lang+Market" },
-                { time: "19:00", name: "River City 郵輪", desc: "昭披耶河晚餐", icon: "fa-ship", color: "text-blue-600" }
-            ]
-        },
-        {
-            day: 3, date: "12/25 (四)", desc: "通羅時尚漫遊", 
-            spots: [
-                { time: "09:00", name: "益生甫記 / 安樂園", desc: "泰式傳統早餐", icon: "fa-coffee", color: "text-brown-500" },
-                { time: "10:30", name: "嵩越路", desc: "網美咖啡街", icon: "fa-camera", color: "text-pink-500" },
-                { time: "12:00", name: "換飯店", desc: "前往 Jasmine 59 Hotel (通羅)", icon: "fa-suitcase", color: "text-jp-blue" },
-                { time: "PM", name: "逛百貨公司", desc: "Iconsiam / Central World", icon: "fa-shopping-bag", color: "text-purple-500" }
-            ]
-        },
-        {
-            day: 4, date: "12/26 (五)", desc: "水上市場一日遊", 
-            spots: [
-                { time: "08:00", name: "包車出發", desc: "飯店大廳集合 (準時!)", icon: "fa-car", color: "text-red-500", highlight: true },
-                { time: "10:00", name: "美功鐵道市場", desc: "看火車進站", icon: "fa-train", color: "text-orange-500" },
-                { time: "12:00", name: "丹嫩莎水上市場", desc: "手搖船體驗", icon: "fa-water", color: "text-blue-400" },
-                { time: "14:00", name: "樹中廟", desc: "靈驗古廟", icon: "fa-vihara", color: "text-yellow-600" },
-                { time: "16:00", name: "返回曼谷", desc: "回飯店或按摩", icon: "fa-home", color: "text-gray-500" }
-            ]
-        }
-    ];
-
+    // --- STATE ---
     let state = {
-        users: ['小朱', '簡哥', '公費包', '團員A', '團員B', '團員C'],
-        fundBalance: 0,
-        currency: 'THB',
         transactions: [],
-        currentDay: 0,
-        checklist: [
-            { title: "證件文件", items: [{name: "護照", checked: true}, {name: "電子機票", checked: false}, {name: "飯店憑證", checked: false}] },
-            { title: "電子用品", items: [{name: "網卡/針", checked: false}, {name: "行動電源", checked: false}, {name: "轉接頭", checked: false}] }
-        ],
-        tempAdvanceUsers: [] // temporary logic
+        itinerary: [],
+        fund: 0,
+        currentDay: 1,
+        users: ['小朱', '簡哥', '公費包'],
+        acc: { cat: '餐飲', payer: '小朱', split: 'shared' }
     };
 
-    // --- INIT ---
-    document.addEventListener('DOMContentLoaded', () => {
-        loadData();
-        updateDate();
-        fetchWeather();
-        renderDayTabs();
-        renderItinerary();
-        renderAccCats();
-        renderPayers();
-        updateFundDisplay();
-        renderHistory();
-        renderChecklist();
-    });
-
-    // --- HOME ---
-    function updateDate() {
-        document.getElementById('current-date-display').innerText = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
-    }
-    async function fetchWeather() {
+    // --- API & SYNC ---
+    async function apiCall(action, data = {}) {
+        document.getElementById('loader').style.display = 'flex';
         try {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=13.75&longitude=100.50&current_weather=true');
-            const data = await res.json();
-            document.getElementById('header-weather').innerHTML = `${Math.round(data.current_weather.temperature)}°C <i class="fas fa-sun text-yellow-400"></i>`;
-        } catch { document.getElementById('header-weather').innerText = "28°C"; }
-    }
-    function translateThai() {
-        const txt = document.getElementById('thai-input').value;
-        if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action, data, ...data }) // flatten for flexibility
+            });
+            const result = await response.json();
+            return result;
+        } catch (e) {
+            alert("連線錯誤: " + e);
+            return null;
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
     }
 
-    // --- ITINERARY ---
-    function renderDayTabs() {
-        const c = document.getElementById('day-tabs');
-        c.innerHTML = ITINERARY_DATA.map((d, i) => `
-            <button onclick="setDay(${i})" class="flex-shrink-0 px-4 py-2 rounded-xl border ${state.currentDay===i ? 'bg-jp-text text-white border-jp-text shadow-md' : 'bg-white text-gray-400 border-gray-100'}">
-                <span class="block text-xs font-bold">Day ${d.day}</span>
-                <span class="text-[10px] whitespace-nowrap">${d.date.split(' ')[0]}</span>
+    async function fetchData() {
+        const data = await apiCall('read_all');
+        if (data) {
+            state.transactions = data.transactions.reverse(); // Newest first
+            state.itinerary = data.itinerary.sort((a,b) => (a.Day*10000+parseInt(a.Time)) - (b.Day*10000+parseInt(b.Time)));
+            state.fund = data.fund;
+            updateUI();
+        }
+    }
+
+    function updateUI() {
+        // Dashboard
+        document.getElementById('dash-fund').innerText = `฿ ${state.fund.toLocaleString()}`;
+        
+        // Itinerary
+        renderDays();
+        renderItinerary();
+        
+        // Account
+        renderHistory();
+    }
+
+    // --- ITINERARY LOGIC ---
+    function renderDays() {
+        const days = [...new Set(state.itinerary.map(i => i.Day))].sort();
+        const container = document.getElementById('day-tabs');
+        if(days.length === 0) { container.innerHTML = '<span class="text-xs text-gray-400">尚無行程</span>'; return; }
+        
+        container.innerHTML = days.map(d => `
+            <button onclick="state.currentDay=${d}; renderItinerary();" class="flex-shrink-0 px-4 py-1 rounded-full text-xs font-bold border transition ${state.currentDay == d ? 'bg-jp-text text-white' : 'bg-white text-gray-400'}">
+                Day ${d}
             </button>
         `).join('');
     }
-    function setDay(i) { state.currentDay = i; renderDayTabs(); renderItinerary(); }
-    
+
     function renderItinerary() {
-        const d = ITINERARY_DATA[state.currentDay];
-        const c = document.getElementById('itinerary-content');
-        c.innerHTML = d.spots.map(s => `
-            <div class="timeline-item">
-                <div class="timeline-dot" style="${s.highlight ? 'background:#ef4444; border-color:#fee2e2;' : ''}"></div>
-                <span class="timeline-time ${s.highlight ? 'text-red-500' : ''}">${s.time}</span>
-                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-50">
-                    <div class="flex justify-between items-start">
-                        <p class="text-sm font-bold text-jp-text"><i class="fas ${s.icon} ${s.color} mr-1"></i> ${s.name}</p>
-                        ${s.link ? `<a href="${s.link}" target="_blank" class="text-xs text-blue-400"><i class="fas fa-external-link-alt"></i></a>` : ''}
+        const list = state.itinerary.filter(i => i.Day == state.currentDay);
+        const container = document.getElementById('itinerary-content');
+        
+        container.innerHTML = list.map(item => `
+            <div class="bg-white rounded-xl p-4 shadow-card relative">
+                <div class="flex justify-between items-start mb-2" onclick="editItem('${item.ID}')">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-jp-text">${item.Time}</span>
+                        <div class="h-4 w-[1px] bg-gray-300"></div>
+                        <h3 class="font-bold text-lg text-jp-text">${item.Name}</h3>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">${s.desc}</p>
+                    <i class="fas fa-pen text-xs text-gray-300"></i>
+                </div>
+                
+                <p class="text-xs text-gray-500 mb-3 ml-1">${item.Desc || ''}</p>
+                
+                ${item.Note ? `<p class="text-[10px] bg-yellow-50 text-yellow-700 p-1 rounded mb-3">📝 ${item.Note}</p>` : ''}
+
+                <div class="flex gap-2">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.Keyword || item.Name)}" target="_blank" class="action-btn btn-nav">
+                        <i class="fas fa-car mr-1"></i> 導航
+                    </a>
+                    <a href="https://www.google.com/search?q=${encodeURIComponent(item.Keyword || item.Name)}+攻略" target="_blank" class="action-btn btn-search">
+                        <i class="fas fa-search mr-1"></i> 搜攻略
+                    </a>
                 </div>
             </div>
         `).join('');
     }
 
-    // --- ACCOUNTING ---
-    let acc = { cat: '餐飲', payer: '公費包', split: 'shared', cur: 'THB' };
+    // Modal Logic
+    function openEditModal(id = null) {
+        document.getElementById('edit-modal').classList.remove('hidden');
+        if (id) {
+            const item = state.itinerary.find(i => i.ID == id);
+            document.getElementById('edit-id').value = item.ID;
+            document.getElementById('edit-day').value = item.Day;
+            document.getElementById('edit-time').value = item.Time;
+            document.getElementById('edit-name').value = item.Name;
+            document.getElementById('edit-keyword').value = item.Keyword;
+            document.getElementById('edit-desc').value = item.Desc;
+        } else {
+            document.getElementById('edit-id').value = '';
+            document.getElementById('edit-day').value = state.currentDay;
+            // Clear others...
+        }
+    }
+    
+    function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+    
+    async function saveItineraryItem() {
+        const data = {
+            ID: document.getElementById('edit-id').value,
+            Day: document.getElementById('edit-day').value,
+            Time: document.getElementById('edit-time').value,
+            Name: document.getElementById('edit-name').value,
+            Keyword: document.getElementById('edit-keyword').value,
+            Desc: document.getElementById('edit-desc').value
+        };
+        const res = await apiCall('update_itinerary', {data});
+        if(res) { fetchData(); closeEditModal(); }
+    }
 
-    function renderAccCats() {
-        const cats = [{n:'餐飲',i:'fa-utensils'}, {n:'交通',i:'fa-car'}, {n:'購物',i:'fa-shopping-bag'}, {n:'住宿',i:'fa-bed'}, {n:'其他',i:'fa-ellipsis-h'}];
-        document.getElementById('cat-container').innerHTML = cats.map((c, i) => `
-            <button onclick="setCat('${c.n}', this)" class="cat-btn ${i===0?'active':''} flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center bg-white border border-gray-100">
-                <i class="fas ${c.i} text-lg mb-1"></i><span class="text-xs">${c.n}</span>
+    async function deleteItineraryItem() {
+        const id = document.getElementById('edit-id').value;
+        if(id && confirm("確定刪除?")) {
+            await apiCall('delete_item', {sheet: 'Itinerary', id});
+            fetchData(); closeEditModal();
+        }
+    }
+
+    function editItem(id) { openEditModal(id); }
+
+    // --- ACCOUNTING LOGIC ---
+    function renderAccUI() {
+        // Categories
+        const cats = [{n:'餐飲',i:'fa-utensils'}, {n:'交通',i:'fa-car'}, {n:'購物',i:'fa-shopping-bag'}, {n:'門票',i:'fa-ticket-alt'}];
+        document.getElementById('cat-container').innerHTML = cats.map(c => `
+            <div onclick="setCat('${c.n}', this)" class="cat-btn ${state.acc.cat==c.n?'active':''} w-16 h-16 rounded-xl border border-gray-100 flex flex-col items-center justify-center cursor-pointer transition">
+                <i class="fas ${c.i} text-lg mb-1 text-gray-500"></i>
+                <span class="text-xs text-gray-500">${c.n}</span>
+            </div>
+        `).join('');
+
+        // Payers
+        document.getElementById('payer-container').innerHTML = state.users.map(u => `
+            <button onclick="setPayer('${u}')" class="${state.acc.payer==u ? 'bg-[#FFF9E6] border border-[#C6A568] text-[#C6A568]' : 'bg-gray-50 text-gray-400'} px-4 py-2 rounded-lg text-sm font-bold min-w-[60px]">
+                ${u}
             </button>
         `).join('');
     }
-    function setCat(n, el) { acc.cat = n; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
-    
-    function renderPayers() {
-        document.getElementById('payer-container').innerHTML = state.users.map(u => `
-            <button onclick="setPayer('${u}', this)" class="payer-btn ${u==='公費包'?'active':''} px-3 py-1 bg-gray-50 text-gray-400 rounded-lg text-xs border border-transparent">${u}</button>
-        `).join('');
-    }
-    function setPayer(u, el) { acc.payer = u; document.querySelectorAll('.payer-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 
-    function setCurrency(c) { 
-        acc.cur = c; 
-        document.getElementById('cur-twd').className = c==='TWD' ? "px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold" : "px-3 py-1 text-xs rounded text-gray-400 font-bold";
-        document.getElementById('cur-thb').className = c==='THB' ? "px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold" : "px-3 py-1 text-xs rounded text-gray-400 font-bold";
+    function setCat(n, el) { state.acc.cat=n; renderAccUI(); }
+    function setPayer(u) { state.acc.payer=u; renderAccUI(); }
+    function setSplit(s) { 
+        state.acc.split=s; 
+        document.getElementById('split-shared').className = s=='shared' ? 'py-2 rounded-lg text-xs font-bold bg-white shadow-sm text-jp-text' : 'py-2 rounded-lg text-xs text-gray-400';
+        document.getElementById('split-deposit').className = s=='deposit' ? 'py-2 rounded-lg text-xs font-bold bg-white shadow-sm text-jp-text' : 'py-2 rounded-lg text-xs text-gray-400';
     }
 
-    function setSplit(t) {
-        acc.split = t;
-        document.querySelectorAll('.split-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-gray-400'); });
-        const btn = document.getElementById(`split-${t}`);
-        btn.classList.add('active'); btn.classList.remove('text-gray-400');
-    }
-
-    function submitTx() {
-        const amt = parseFloat(document.getElementById('amt-input').value);
+    async function submitTx() {
+        const amt = document.getElementById('amt-input').value;
         const note = document.getElementById('note-input').value;
-        if (!amt) return alert("請輸入金額");
+        if(!amt) return alert("請輸入金額");
 
-        if (acc.split === 'advance') {
-            document.getElementById('advance-modal').classList.add('open');
-            const list = document.getElementById('advance-list');
-            list.innerHTML = state.users.filter(u => u !== '公費包').map(u => `
-                <label class="flex items-center gap-2 p-2 bg-gray-50 rounded"><input type="checkbox" value="${u}"> ${u}</label>
-            `).join('');
-            return; // Wait for modal
+        const data = {
+            payer: state.acc.payer,
+            type: state.acc.split,
+            cat: state.acc.cat,
+            amount: amt,
+            note: note || state.acc.cat
+        };
+
+        const res = await apiCall('add_transaction', {data});
+        if(res) {
+            document.getElementById('amt-input').value = '';
+            document.getElementById('note-input').value = '';
+            alert("記帳成功！");
+            fetchData(); // Refresh to show new history and balance
         }
-
-        processTx(amt, note, acc.payer, acc.split, acc.cat, acc.cur, []);
-    }
-
-    function confirmAdvance() {
-        const amt = parseFloat(document.getElementById('amt-input').value);
-        const note = document.getElementById('note-input').value;
-        const checked = Array.from(document.querySelectorAll('#advance-list input:checked')).map(cb => cb.value);
-        if(checked.length === 0) return alert("請選擇代墊對象");
-        
-        processTx(amt, note, acc.payer, 'advance', acc.cat, acc.cur, checked);
-        closeModal('advance-modal');
-    }
-
-    function processTx(amt, note, payer, split, cat, cur, targets) {
-        // Fund Logic (Simple TWD assumption 1:1 for logic, in real app need rate)
-        if(split === 'deposit') {
-            state.fundBalance += amt;
-        } else if (payer === '公費包') {
-            state.fundBalance -= amt;
-        }
-
-        state.transactions.unshift({ date: new Date().toLocaleString(), amt, note, payer, split, cat, cur, targets });
-        saveData();
-        updateFundDisplay();
-        renderHistory();
-        document.getElementById('amt-input').value = '';
-        document.getElementById('note-input').value = '';
-        alert("已記錄");
-    }
-
-    function updateFundDisplay() {
-        const txt = `฿ ${state.fundBalance.toLocaleString()}`;
-        document.getElementById('acc-fund-display').innerText = txt;
-        document.getElementById('dash-fund').innerText = "公費: " + txt;
     }
 
     function renderHistory() {
-        document.getElementById('tx-history').innerHTML = state.transactions.slice(0, 10).map(t => `
-            <div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border border-gray-50">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">${t.payer[0]}</div>
+        const c = document.getElementById('tx-history');
+        c.innerHTML = state.transactions.slice(0, 5).map(t => `
+            <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">${t.Payer[0]}</div>
                     <div>
-                        <p class="text-sm font-bold text-jp-text">${t.note || t.cat}</p>
-                        <p class="text-[10px] text-gray-400">${t.split === 'deposit' ? '入金' : t.split === 'advance' ? `代墊(${t.targets.length})` : '支出'}</p>
+                        <p class="text-sm font-bold text-jp-text">${t.Note}</p>
+                        <p class="text-[10px] text-gray-400">${new Date(t.Date).toLocaleDateString()}</p>
                     </div>
                 </div>
-                <span class="font-bold ${t.split === 'deposit' ? 'text-green-500' : 'text-jp-text'}">${t.split==='deposit' ? '+' : '-'} ${t.amt}</span>
+                <span class="font-bold ${t.Type=='deposit'?'text-green-500':'text-jp-text'}">
+                    ${t.Type=='deposit'?'+':'-'} ${t.Amount}
+                </span>
             </div>
         `).join('');
     }
-    
-    function clearTx() { if(confirm("確定清空?")) { state.transactions=[]; state.fundBalance=0; saveData(); location.reload(); }}
-    function editUsers() { 
-        const n = prompt("輸入新成員名單 (用逗號分隔)", state.users.join(','));
-        if(n) { state.users = n.split(','); saveData(); renderPayers(); }
-    }
 
-    // --- CHECKLIST ---
-    function renderChecklist() {
-        let total=0, checked=0;
-        document.getElementById('checklist-container').innerHTML = state.checklist.map((g, gi) => `
-            <div class="bg-white rounded-xl p-4 shadow-soft mb-3">
-                <div class="flex justify-between mb-2">
-                    <input type="text" value="${g.title}" onchange="updateCheckTitle(${gi}, this.value)" class="font-bold text-sm bg-transparent outline-none">
-                    <span class="text-xs text-gray-400">${g.items.filter(i=>i.checked).length}/${g.items.length}</span>
-                </div>
-                <div class="w-full bg-gray-100 h-1 rounded-full mb-3"><div class="bg-jp-green h-1 rounded-full" style="width:${(g.items.filter(i=>i.checked).length/g.items.length)*100}%"></div></div>
-                <div class="space-y-2">
-                    ${g.items.map((i, ii) => {
-                        total++; if(i.checked) checked++;
-                        return `<div class="flex items-center justify-between">
-                            <label class="flex items-center gap-2 text-sm text-gray-600">
-                                <input type="checkbox" ${i.checked?'checked':''} class="accent-jp-green" onchange="toggleCheck(${gi}, ${ii})">
-                                <span class="${i.checked?'line-through text-gray-300':''}">${i.name}</span>
-                            </label>
-                            <button onclick="delCheckItem(${gi}, ${ii})" class="text-gray-200 text-xs"><i class="fas fa-times"></i></button>
-                        </div>`;
-                    }).join('')}
-                    <button onclick="addCheckItemTo(${gi})" class="text-xs text-jp-blue mt-2">+ 新增細項</button>
-                </div>
-            </div>
-        `).join('');
-        document.getElementById('home-check-progress').innerText = `完成度 ${total===0?0:Math.round((checked/total)*100)}%`;
-    }
-    function toggleCheck(gi, ii) { state.checklist[gi].items[ii].checked = !state.checklist[gi].items[ii].checked; saveData(); renderChecklist(); }
-    function addChecklistCategory() { state.checklist.push({title:'新分類', items:[]}); saveData(); renderChecklist(); }
-    function addChecklistItem() { const n = prompt("項目名稱"); if(n) { state.checklist[0].items.push({name:n, checked:false}); saveData(); renderChecklist(); }} 
-    function addCheckItemTo(gi) { const n = prompt("項目名稱"); if(n) { state.checklist[gi].items.push({name:n, checked:false}); saveData(); renderChecklist(); }}
-    function updateCheckTitle(gi, v) { state.checklist[gi].title = v; saveData(); }
-    function delCheckItem(gi, ii) { state.checklist[gi].items.splice(ii,1); saveData(); renderChecklist(); }
-
-    // --- SYSTEM ---
     function switchTab(id) {
         document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
-        const btn = document.querySelector(`.nav-btn[data-target="${id}"]`);
-        if(btn) btn.classList.add('active');
     }
-    
-    function saveData() { localStorage.setItem('bkk_2025_v3', JSON.stringify(state)); }
-    function loadData() { 
-        const d = localStorage.getItem('bkk_2025_v3');
-        if(d) {
-            try { 
-                const p = JSON.parse(d);
-                // Simple merge to keep logic safe
-                state.fundBalance = p.fundBalance || 0;
-                state.transactions = p.transactions || [];
-                state.checklist = p.checklist || state.checklist;
-                state.users = p.users || state.users;
-            } catch(e) { console.log('Reset data'); }
-        }
-    }
-    
-    // Sync Logic
-    function exportData() { navigator.clipboard.writeText(JSON.stringify(state)); alert("代碼已複製！請傳給朋友"); }
-    function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    function confirmImport() {
-        const v = document.getElementById('import-area').value;
-        if(v) { 
-            try { 
-                state = JSON.parse(v); saveData(); location.reload(); 
-            } catch { alert("格式錯誤"); }
-        }
-    }
-    function hardReset() { if(confirm("確定刪除所有資料?")) { localStorage.removeItem('bkk_2025_v3'); location.reload(); }}
+
+    // Init
+    renderAccUI();
+    fetchData(); // Load data on start
 
 </script>
 </body>
