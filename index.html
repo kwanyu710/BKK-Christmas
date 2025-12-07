@@ -6,6 +6,7 @@
     <title>2025 曼谷聖誕跨年 - 泰廢了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
@@ -41,10 +42,14 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Timeline */
-        .timeline-item { position: relative; padding-left: 24px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; }
+        .timeline-item { position: relative; padding-left: 36px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 10px; }
         .timeline-item:last-child { border-left: 2px solid transparent; }
-        .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; }
+        .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; z-index: 10; }
         .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
+
+        /* Drag Handle */
+        .drag-handle { position: absolute; left: -36px; top: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #d1d5db; cursor: grab; touch-action: none; }
+        .drag-handle:active { color: #C6A568; cursor: grabbing; }
 
         /* Buttons */
         .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
@@ -60,6 +65,9 @@
         /* Edit Buttons */
         .edit-spot-btn { opacity: 0.3; transition: 0.2s; }
         .timeline-item:hover .edit-spot-btn { opacity: 1; }
+
+        /* Sortable Ghost */
+        .sortable-ghost { opacity: 0.4; background: #FFF9E6; }
     </style>
 </head>
 <body>
@@ -74,7 +82,7 @@
         <div class="text-center">
              <span class="block text-[10px] text-gray-400">曼谷</span>
              <span class="text-sm font-medium transition-all duration-300" id="header-status">
-                 <span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>
+                 <span class="text-gray-400 text-xs" id="header-weather">28°C</span>
              </span>
         </div>
     </header>
@@ -146,7 +154,8 @@
             <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 flex-1" id="day-tabs"></div>
             <button onclick="openEditSpot()" class="ml-2 w-8 h-8 rounded-full bg-jp-text text-white flex items-center justify-center shadow-md flex-shrink-0"><i class="fas fa-plus text-xs"></i></button>
         </div>
-
+        
+        <p class="text-[10px] text-gray-400 text-center mb-2"><i class="fas fa-bars mr-1"></i>按住左側把手可拖曳排序</p>
         <div id="itinerary-content" class="px-5 space-y-4 min-h-[50vh]">
             </div>
 
@@ -236,7 +245,7 @@
             <h3 class="font-bold text-jp-text mb-2"><i class="fab fa-google-drive text-jp-green mr-2"></i>雲端資料庫 (Google Sheets)</h3>
             <p class="text-xs text-gray-500 mb-4 leading-relaxed">
                同步至 Google 試算表。<br>
-               <span class="text-[10px] text-gray-400">需連網。</span>
+               <span class="text-[10px] text-gray-400">需連網。點擊下載會覆蓋本機資料。</span>
             </p>
             <div class="flex gap-3">
                  <button onclick="syncToCloud('upload')" id="btn-upload" class="flex-1 bg-jp-text text-white py-3 rounded-lg text-sm shadow hover:opacity-90 active:scale-95 transition flex items-center justify-center gap-2">
@@ -328,12 +337,10 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA FROM YOUR JSON ---
+    // --- UPDATED DATA ---
     const DEFAULT_ITINERARY = [
         {
-            "day": 1,
-            "date": "12/23 (二)",
-            "desc": "抵達曼谷",
+            "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷",
             "spots": [
                 { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500" },
                 { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店 (車程約30分)", "icon": "fa-car", "color": "text-green-600", "highlight": true },
@@ -342,9 +349,7 @@
             ]
         },
         {
-            "day": 2,
-            "date": "12/24 (三)",
-            "desc": "舊城古蹟巡禮",
+            "day": 2, "date": "12/24 (三)", "desc": "舊城古蹟巡禮",
             "spots": [
                 { "time": "09:30", "name": "石龍軍路", "desc": "文青散策 / 美食 (豬腳飯、仁和園)", "link": "", "keyword": "石龍軍路美食", "icon": "fa-walking", "color": "text-gray-500" },
                 { "time": "11:00", "name": "臥佛寺", "desc": "必拍古蹟", "link": "", "keyword": "鄭王廟 拍照", "icon": "fa-gopuram", "color": "text-gray-500" },
@@ -354,9 +359,7 @@
             ]
         },
         {
-            "day": 3,
-            "date": "12/25 (四)",
-            "desc": "通羅時尚漫遊",
+            "day": 3, "date": "12/25 (四)", "desc": "通羅時尚漫遊",
             "spots": [
                 { "time": "09:00", "name": "傳統早餐", "desc": "益生甫記  or 安樂園", "link": "https://maps.app.goo.gl/JmfSPvJffbXh7CeS7?g_st=ipc", "keyword": "曼谷 安樂園", "icon": "fa-coffee", "color": "text-gray-500" },
                 { "time": "10:30", "name": "嵩越路", "desc": "文青街拍", "link": "https://maps.app.goo.gl/eM2DRoHF2P22VCAv8?g_st=ipc", "keyword": "嵩越路", "icon": "fa-camera", "color": "text-gray-500" },
@@ -366,9 +369,7 @@
             ]
         },
         {
-            "day": 4,
-            "date": "12/26 (五)",
-            "desc": "水上市場一日遊",
+            "day": 4, "date": "12/26 (五)", "desc": "水上市場一日遊",
             "spots": [
                 { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true },
                 { "time": "10:00", "name": "美功鐵道市場", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500" },
@@ -378,9 +379,7 @@
             ]
         },
         {
-            "day": 5,
-            "date": "12/27 (六)",
-            "desc": "返台 / 自由",
+            "day": 5, "date": "12/27 (六)", "desc": "返台 / 自由",
             "spots": [
                 { "time": "10:00", "name": "恰圖恰市集", "desc": "最後採買 / 按摩", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500" },
                 { "time": "Flight", "name": "前往機場", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500" }
@@ -397,10 +396,12 @@
         itinerary: DEFAULT_ITINERARY, 
         currentDay: 0
     };
+    
+    let sortableInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
-            loadData(); // Load local data first
+            loadData();
             updateDate();
             fetchWeather();
             fetchExchangeRate();
@@ -412,7 +413,7 @@
             renderHistory();
             renderChecklist();
             
-            // AUTO SYNC ON LOAD
+            // Try Auto Sync
             autoSync();
 
             console.log("App initialized successfully");
@@ -448,7 +449,7 @@
         if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
     }
 
-    // Itinerary
+    // Itinerary & Sortable
     function renderDayTabs() {
         document.getElementById('day-tabs').innerHTML = state.itinerary.map((d, i) => `
             <button onclick="setDay(${i})" class="flex-shrink-0 px-4 py-2 rounded-xl border ${state.currentDay===i ? 'bg-jp-text text-white border-jp-text shadow-md' : 'bg-white text-gray-400 border-gray-100'}">
@@ -462,10 +463,12 @@
     function renderItinerary() {
         const d = state.itinerary[state.currentDay];
         const c = document.getElementById('itinerary-content');
+        
         if(!d.spots || d.spots.length === 0) { c.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">點擊 + 新增行程</div>`; return; }
         
         c.innerHTML = d.spots.map((s, idx) => `
-            <div class="timeline-item group">
+            <div class="timeline-item group" data-id="${idx}">
+                <div class="drag-handle"><i class="fas fa-bars"></i></div>
                 <div class="timeline-dot" style="${s.highlight ? 'background:#ef4444; border-color:#fee2e2;' : ''}"></div>
                 <span class="timeline-time ${s.highlight ? 'text-red-500' : ''}">${s.time}</span>
                 <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-50 relative">
@@ -481,6 +484,28 @@
                 </div>
             </div>
         `).join('');
+
+        // Init Sortable
+        if(sortableInstance) sortableInstance.destroy();
+        sortableInstance = new Sortable(c, {
+            handle: '.drag-handle',
+            ghostClass: 'sortable-ghost',
+            animation: 150,
+            onEnd: function(evt) {
+                const oldIndex = evt.oldIndex;
+                const newIndex = evt.newIndex;
+                if(oldIndex === newIndex) return;
+
+                // Update Data
+                const spots = state.itinerary[state.currentDay].spots;
+                const [movedItem] = spots.splice(oldIndex, 1);
+                spots.splice(newIndex, 0, movedItem);
+                
+                // Save and Re-render (to fix CSS timeline borders)
+                saveData();
+                renderItinerary();
+            }
+        });
     }
 
     // Edit Modal Logic
@@ -514,8 +539,11 @@
         if (!s.name) return alert("請輸入名稱");
         if (!state.itinerary[state.currentDay].spots) state.itinerary[state.currentDay].spots = [];
         
-        if (currentEditIndex === -1) { state.itinerary[state.currentDay].spots.push(s); state.itinerary[state.currentDay].spots.sort((a,b)=>a.time.localeCompare(b.time)); }
+        if (currentEditIndex === -1) { state.itinerary[state.currentDay].spots.push(s); }
         else { state.itinerary[state.currentDay].spots[currentEditIndex] = s; }
+        
+        // Removed Auto-Sort by time to allow manual sorting
+        // state.itinerary[state.currentDay].spots.sort((a,b)=>a.time.localeCompare(b.time)); 
         
         saveData(); renderItinerary(); closeModal('itinerary-modal');
     }
@@ -588,58 +616,62 @@
     // Cloud Sync
     async function autoSync() {
         const headerStatus = document.getElementById('header-status');
-        const headerWeather = document.getElementById('header-weather');
+        if(headerStatus) headerStatus.innerHTML = '<span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>';
         
-        // UI: Show syncing
-        if(headerStatus) {
-            headerStatus.innerHTML = '<span class="text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin"></i> 同步中...</span>';
-        }
-
+        // Add timestamp to disable caching
         try {
-            const res = await fetch(GOOGLE_SCRIPT_URL);
+            const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime());
             const cloudData = await res.json();
             
             if (cloudData && typeof cloudData === 'object') {
-                state = { ...state, ...cloudData }; // Merge/Overwrite
+                state = { ...state, ...cloudData };
                 saveData();
-                
-                // Re-render everything
-                renderItinerary();
-                renderAccCats();
-                renderPayers();
-                updateFundDisplay();
-                renderHistory();
-                renderChecklist();
+                renderAll();
                 console.log("Auto-synced from cloud");
             }
         } catch (e) {
-            console.log("Auto-sync failed (offline?)");
+            console.log("Auto-sync failed (offline?)", e);
         } finally {
-            // Restore Weather UI
             fetchWeather();
         }
     }
 
     async function syncToCloud(action) {
-        // Try to find the buttons if they exist (on settings page) for UI feedback, but don't crash if missing
         const btn = document.getElementById(action==='upload'?'btn-upload':'btn-download');
         let oldTxt = '';
         if(btn) { oldTxt = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true; }
         
         try {
             if (action === 'upload') {
+                // Add timestamp to ensure data is unique
+                state._lastUpdated = new Date().getTime(); 
                 await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(state) });
-                alert("已發送至雲端 (請稍後檢查 Sheet)");
+                alert("已送出請求。請等待 3-5 秒後在另一台裝置按「下載」。");
             } else {
-                const res = await fetch(GOOGLE_SCRIPT_URL);
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + new Date().getTime()); // Anti-cache
                 const data = await res.json();
-                if (data && confirm("確定用雲端資料覆蓋本機?")) { state = {...state, ...data}; saveData(); location.reload(); }
+                if (data && confirm("確定用雲端資料覆蓋本機?")) { 
+                    state = {...state, ...data}; 
+                    saveData(); 
+                    renderAll(); 
+                    alert("更新成功！");
+                }
             }
-        } catch (e) { alert("同步失敗: " + e.message); } 
+        } catch (e) { alert("同步失敗: " + e.message + "\n請確認 Google Script 已正確部署。"); } 
         finally { 
             if(btn) { btn.innerHTML = oldTxt; btn.disabled = false; }
         }
     }
+    
+    function renderAll() {
+        renderItinerary();
+        renderAccCats();
+        renderPayers();
+        updateFundDisplay();
+        renderHistory();
+        renderChecklist();
+    }
+
     function exportData() { navigator.clipboard.writeText(JSON.stringify(state)); alert("代碼已複製"); }
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
