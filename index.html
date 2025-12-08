@@ -6,7 +6,6 @@
     <title>2025 曼谷聖誕跨年 - 泰廢了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
@@ -44,15 +43,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Timeline */
-        .timeline-item { position: relative; padding-left: 32px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 12px; transition: transform 0.2s; }
+        .timeline-item { position: relative; padding-left: 32px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 12px; }
         .timeline-item:last-child { border-left: 2px solid transparent; }
         .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; z-index: 10; }
         .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
         
-        .drag-handle { position: absolute; left: -40px; top: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #D1D5DB; cursor: grab; touch-action: none; }
-        .drag-handle:active { color: #C6A568; cursor: grabbing; }
-        .sortable-ghost { opacity: 0.3; background: #f3f4f6; border-radius: 12px; }
-
         /* Buttons & Nav */
         .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
         .payer-btn.active { background-color: #FFF9E6; border: 1px solid #C6A568; color: #C6A568; font-weight: bold; }
@@ -60,7 +55,7 @@
         .nav-btn.active { color: #C6A568; }
         .nav-btn.active i { transform: scale(1.1); transition: 0.2s; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .edit-spot-btn { opacity: 0.3; transition: 0.2s; }
         .timeline-item:hover .edit-spot-btn { opacity: 1; }
@@ -78,7 +73,7 @@
 
 <div class="app-container">
     
-    <div class="fixed right-5 bottom-24 z-[100] flex flex-col gap-3">
+    <div class="fixed right-5 bottom-28 flex flex-col gap-3" style="z-index: 9999;">
         <button onclick="syncToCloud('download')" class="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition hover:text-jp-blue"><i class="fas fa-cloud-download-alt"></i></button>
         <button onclick="syncToCloud('upload')" class="w-10 h-10 rounded-full bg-jp-text shadow-lg border border-jp-text flex items-center justify-center text-white active:scale-90 transition hover:bg-gray-700"><i class="fas fa-cloud-upload-alt"></i></button>
     </div>
@@ -156,7 +151,7 @@
             <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 flex-1" id="day-tabs"></div>
             <button onclick="openEditSpot()" class="ml-2 w-8 h-8 rounded-full bg-jp-text text-white flex items-center justify-center shadow-md flex-shrink-0"><i class="fas fa-plus text-xs"></i></button>
         </div>
-        <p class="text-[10px] text-gray-400 text-center mb-2"><i class="fas fa-bars mr-1"></i>按住左側把手可拖曳排序</p>
+        
         <div id="itinerary-content" class="px-5 space-y-4 min-h-[50vh]"></div>
         <div class="px-5 mt-8 mb-4">
              <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase">住宿資訊</h3>
@@ -310,9 +305,17 @@
 
     <div id="import-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">貼上代碼</h3><textarea id="import-area" class="w-full h-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs mb-4"></textarea><div class="flex gap-2"><button onclick="closeModal('import-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmImport()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
     <div id="advance-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">幫誰代墊?</h3><div id="advance-list" class="space-y-2 mb-4"></div><div class="flex gap-2"><button onclick="closeModal('advance-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmAdvance()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
+    
     <div id="itinerary-modal" class="modal-overlay">
         <div class="bg-white w-[90%] rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="font-bold text-lg mb-4 text-jp-text" id="spot-modal-title">編輯景點</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-jp-text" id="spot-modal-title">編輯景點</h3>
+                <div id="sort-controls" class="flex gap-2">
+                    <button onclick="moveSpot(-1)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"><i class="fas fa-arrow-up"></i></button>
+                    <button onclick="moveSpot(1)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"><i class="fas fa-arrow-down"></i></button>
+                </div>
+            </div>
+            
             <input type="hidden" id="spot-index">
             <div class="space-y-3">
                 <div><label class="text-xs text-gray-400 block mb-1">時間</label><input type="text" id="spot-time" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm"></div>
@@ -337,7 +340,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V16) ---
+    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V17) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -382,7 +385,7 @@
         currentDay: 0
     };
     
-    let sortableInstance = null;
+    // Sortable REMOVED.
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
@@ -474,9 +477,9 @@
                 </div>
             ` : '';
 
+            // Removed drag-handle
             return `
             <div class="timeline-item group" data-id="${idx}">
-                <div class="drag-handle"><i class="fas fa-bars"></i></div>
                 <div class="timeline-dot" style="${s.highlight ? 'background:#ef4444; border-color:#fee2e2;' : ''}"></div>
                 <span class="timeline-time ${s.highlight ? 'text-red-500' : ''}">${s.time}</span>
                 <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-50 relative">
@@ -494,33 +497,19 @@
             </div>
             `;
         }).join('');
-
-        if(sortableInstance) sortableInstance.destroy();
-        sortableInstance = new Sortable(c, {
-            handle: '.drag-handle',
-            ghostClass: 'sortable-ghost',
-            animation: 150,
-            onEnd: function(evt) {
-                const oldIndex = evt.oldIndex;
-                const newIndex = evt.newIndex;
-                if(oldIndex === newIndex) return;
-                const spots = state.itinerary[state.currentDay].spots;
-                const [movedItem] = spots.splice(oldIndex, 1);
-                spots.splice(newIndex, 0, movedItem);
-                saveData();
-                renderItinerary();
-            }
-        });
     }
 
     let currentEditIndex = -1;
     function openEditSpot(index = -1) {
         currentEditIndex = index;
         document.getElementById('itinerary-modal').classList.add('open');
-        const fields = ['time', 'name', 'desc', 'link', 'keyword', 'icon', 'deep-desc']; // Added deep-desc
+        const fields = ['time', 'name', 'desc', 'link', 'keyword', 'icon', 'deep-desc']; 
         const isNew = index === -1;
         document.getElementById('spot-modal-title').innerText = isNew ? "新增行程" : "修改行程";
         document.getElementById('btn-delete-spot').style.display = isNew ? 'none' : 'block';
+        
+        // Show/Hide Sort Controls
+        document.getElementById('sort-controls').style.display = isNew ? 'none' : 'flex';
         
         if (isNew) {
             fields.forEach(f => { const el = document.getElementById('spot-'+f); if(el) el.value = (f==='icon'?'fa-map-marker-alt':''); });
@@ -528,12 +517,35 @@
             const s = state.itinerary[state.currentDay].spots[index];
             fields.forEach(f => {
                 const el = document.getElementById('spot-'+f);
-                // Map deep-desc correctly from property deep_desc
                 if (f === 'deep-desc') { if(el) el.value = s.deep_desc || ''; }
                 else if(el) el.value = s[f] || (f==='icon'?'fa-map-marker-alt':'');
             });
         }
     }
+    
+    // NEW: Sorting Logic Inside Modal
+    function moveSpot(direction) {
+        if (currentEditIndex === -1) return;
+        const spots = state.itinerary[state.currentDay].spots;
+        const newIndex = currentEditIndex + direction;
+        
+        if (newIndex < 0 || newIndex >= spots.length) return; // Out of bounds
+        
+        // Swap
+        const temp = spots[currentEditIndex];
+        spots[currentEditIndex] = spots[newIndex];
+        spots[newIndex] = temp;
+        
+        // Update current index
+        currentEditIndex = newIndex;
+        
+        // Save & Reload
+        saveData();
+        renderItinerary();
+        alert("順序已調整");
+        closeModal('itinerary-modal');
+    }
+
     function saveSpot() {
         const s = {
             time: document.getElementById('spot-time').value,
@@ -542,7 +554,7 @@
             link: document.getElementById('spot-link').value,
             keyword: document.getElementById('spot-keyword').value,
             icon: document.getElementById('spot-icon').value,
-            deep_desc: document.getElementById('spot-deep-desc').value, // Save Deep Desc
+            deep_desc: document.getElementById('spot-deep-desc').value, 
             color: 'text-gray-500'
         };
         if (!s.name) return alert("請輸入名稱");
@@ -645,9 +657,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v16 to FORCE DATA RELOAD (Fixes empty description issue)
-    function saveData() { localStorage.setItem('bkk_2025_v16', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v16'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v17 to FORCE DATA RELOAD
+    function saveData() { localStorage.setItem('bkk_2025_v17', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v17'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
@@ -689,7 +701,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v16'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v17'); location.reload(); } }
 </script>
 </body>
 </html>
