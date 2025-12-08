@@ -6,6 +6,7 @@
     <title>2025 曼谷聖誕跨年 - 泰廢了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
@@ -48,6 +49,10 @@
         .timeline-dot { position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; z-index: 10; }
         .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; }
         
+        /* Sortable List Styling */
+        .sort-list-item { background: white; border: 1px solid #eee; padding: 12px; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .sort-ghost { opacity: 0.4; background: #C6A568; }
+
         /* Buttons & Nav */
         .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
         .payer-btn.active { background-color: #FFF9E6; border: 1px solid #C6A568; color: #C6A568; font-weight: bold; }
@@ -149,10 +154,14 @@
     <div id="tab-itinerary" class="section pb-24">
         <div class="sticky top-[72px] z-40 bg-[#F9F8F4] px-5 py-2 mb-2 shadow-sm flex justify-between items-center">
             <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 flex-1" id="day-tabs"></div>
-            <button onclick="openEditSpot()" class="ml-2 w-8 h-8 rounded-full bg-jp-text text-white flex items-center justify-center shadow-md flex-shrink-0"><i class="fas fa-plus text-xs"></i></button>
+            <div class="flex gap-2 ml-2 flex-shrink-0">
+                <button onclick="openSortModal()" class="w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-500 flex items-center justify-center shadow-sm active:scale-90 transition"><i class="fas fa-sort text-xs"></i></button>
+                <button onclick="openEditSpot()" class="w-8 h-8 rounded-full bg-jp-text text-white flex items-center justify-center shadow-md active:scale-90 transition"><i class="fas fa-plus text-xs"></i></button>
+            </div>
         </div>
         
         <div id="itinerary-content" class="px-5 space-y-4 min-h-[50vh]"></div>
+        
         <div class="px-5 mt-8 mb-4">
              <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase">住宿資訊</h3>
              <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-blue mb-2">
@@ -306,14 +315,22 @@
     <div id="import-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">貼上代碼</h3><textarea id="import-area" class="w-full h-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs mb-4"></textarea><div class="flex gap-2"><button onclick="closeModal('import-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmImport()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
     <div id="advance-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">幫誰代墊?</h3><div id="advance-list" class="space-y-2 mb-4"></div><div class="flex gap-2"><button onclick="closeModal('advance-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmAdvance()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
     
+    <div id="sort-modal" class="modal-overlay">
+        <div class="bg-white w-[90%] rounded-2xl p-5 shadow-2xl max-h-[80vh] flex flex-col">
+            <h3 class="font-bold text-lg mb-4 text-jp-text">調整順序</h3>
+            <p class="text-xs text-gray-400 mb-2">長按並拖曳即可排序</p>
+            <div id="sort-list-container" class="overflow-y-auto flex-1 mb-4"></div>
+            <div class="flex gap-2">
+                <button onclick="closeModal('sort-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
+                <button onclick="confirmSort()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">儲存順序</button>
+            </div>
+        </div>
+    </div>
+
     <div id="itinerary-modal" class="modal-overlay">
         <div class="bg-white w-[90%] rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-lg text-jp-text" id="spot-modal-title">編輯景點</h3>
-                <div id="sort-controls" class="flex gap-2">
-                    <button onclick="moveSpot(-1)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"><i class="fas fa-arrow-up"></i></button>
-                    <button onclick="moveSpot(1)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"><i class="fas fa-arrow-down"></i></button>
-                </div>
             </div>
             
             <input type="hidden" id="spot-index">
@@ -321,7 +338,7 @@
                 <div><label class="text-xs text-gray-400 block mb-1">時間</label><input type="text" id="spot-time" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm"></div>
                 <div><label class="text-xs text-gray-400 block mb-1">名稱</label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm font-bold"></div>
                 <div><label class="text-xs text-gray-400 block mb-1">簡短描述</label><input type="text" id="spot-desc" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm"></div>
-                <div><label class="text-xs text-jp-accent block mb-1">📖 深度介紹 (選填)</label><textarea id="spot-deep-desc" class="w-full bg-mag-paper border border-amber-100 rounded p-2 text-xs h-20 placeholder-gray-300" placeholder="輸入歷史背景、冷知識..."></textarea></div>
+                <div><label class="text-xs text-jp-accent block mb-1">📖 景點故事 (深度介紹)</label><textarea id="spot-deep-desc" class="w-full bg-mag-paper border border-amber-100 rounded p-2 text-xs h-24 placeholder-gray-300 leading-relaxed" placeholder="輸入歷史背景、冷知識..."></textarea></div>
                 <div class="grid grid-cols-2 gap-2">
                     <div><label class="text-xs text-gray-400 block mb-1">Google Map 網址</label><input type="text" id="spot-link" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-xs" placeholder="https://..."></div>
                     <div><label class="text-xs text-gray-400 block mb-1">攻略關鍵字</label><input type="text" id="spot-keyword" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-xs" placeholder="搜尋用"></div>
@@ -340,7 +357,8 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
     
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS (V17) ---
+    // --- FORCE UPDATE DATA WITH DEEP DESCRIPTIONS (V18) ---
+    // 確保這裡的 deep_desc 都有值
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄機場出發", "desc": "泰國亞航 FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -385,7 +403,7 @@
         currentDay: 0
     };
     
-    // Sortable REMOVED.
+    let sortable = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
@@ -430,7 +448,6 @@
         if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
     }
 
-    // Itinerary Logic with Manual Toggle (Fix for Flash issue)
     function renderDayTabs() {
         document.getElementById('day-tabs').innerHTML = state.itinerary.map((d, i) => `
             <button onclick="setDay(${i})" class="flex-shrink-0 px-4 py-2 rounded-xl border ${state.currentDay===i ? 'bg-jp-text text-white border-jp-text shadow-md' : 'bg-white text-gray-400 border-gray-100'}">
@@ -441,12 +458,9 @@
     }
     function setDay(i) { state.currentDay = i; renderDayTabs(); renderItinerary(); }
     
-    // NEW FUNCTION: Manually Toggle Deep Desc
     function toggleDesc(btn) {
         const content = btn.nextElementSibling;
         const icon = btn.querySelector('.chevron-icon');
-        
-        // Toggle class
         if (content.classList.contains('show')) {
             content.classList.remove('show');
             if(icon) icon.classList.remove('rotate');
@@ -463,7 +477,6 @@
         if(!d.spots || d.spots.length === 0) { c.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">點擊 + 新增行程</div>`; return; }
         
         c.innerHTML = d.spots.map((s, idx) => {
-            // Check if deep_desc exists
             const hasDesc = s.deep_desc && s.deep_desc.length > 0;
             const deepContent = hasDesc ? `
                 <div class="mt-2 border-t border-gray-100 pt-2">
@@ -477,7 +490,6 @@
                 </div>
             ` : '';
 
-            // Removed drag-handle
             return `
             <div class="timeline-item group" data-id="${idx}">
                 <div class="timeline-dot" style="${s.highlight ? 'background:#ef4444; border-color:#fee2e2;' : ''}"></div>
@@ -499,6 +511,39 @@
         }).join('');
     }
 
+    // --- SORTING LOGIC ---
+    function openSortModal() {
+        const spots = state.itinerary[state.currentDay].spots;
+        if(!spots || spots.length === 0) return alert("沒有行程可排序");
+        
+        const container = document.getElementById('sort-list-container');
+        container.innerHTML = spots.map((s, i) => `
+            <div class="sort-list-item" data-id="${i}">
+                <span class="font-bold text-sm text-gray-600 truncate mr-2"><i class="fas ${s.icon} mr-2 text-gray-400"></i>${s.name}</span>
+                <i class="fas fa-bars text-gray-300 cursor-move"></i>
+            </div>
+        `).join('');
+        
+        document.getElementById('sort-modal').classList.add('open');
+        
+        if(sortable) sortable.destroy();
+        sortable = new Sortable(container, {
+            animation: 150,
+            ghostClass: 'sort-ghost'
+        });
+    }
+
+    function confirmSort() {
+        const newOrder = sortable.toArray(); // Returns array of data-id strings
+        const currentSpots = state.itinerary[state.currentDay].spots;
+        const reorderedSpots = newOrder.map(index => currentSpots[parseInt(index)]);
+        
+        state.itinerary[state.currentDay].spots = reorderedSpots;
+        saveData();
+        renderItinerary();
+        closeModal('sort-modal');
+    }
+
     let currentEditIndex = -1;
     function openEditSpot(index = -1) {
         currentEditIndex = index;
@@ -507,9 +552,6 @@
         const isNew = index === -1;
         document.getElementById('spot-modal-title').innerText = isNew ? "新增行程" : "修改行程";
         document.getElementById('btn-delete-spot').style.display = isNew ? 'none' : 'block';
-        
-        // Show/Hide Sort Controls
-        document.getElementById('sort-controls').style.display = isNew ? 'none' : 'flex';
         
         if (isNew) {
             fields.forEach(f => { const el = document.getElementById('spot-'+f); if(el) el.value = (f==='icon'?'fa-map-marker-alt':''); });
@@ -521,29 +563,6 @@
                 else if(el) el.value = s[f] || (f==='icon'?'fa-map-marker-alt':'');
             });
         }
-    }
-    
-    // NEW: Sorting Logic Inside Modal
-    function moveSpot(direction) {
-        if (currentEditIndex === -1) return;
-        const spots = state.itinerary[state.currentDay].spots;
-        const newIndex = currentEditIndex + direction;
-        
-        if (newIndex < 0 || newIndex >= spots.length) return; // Out of bounds
-        
-        // Swap
-        const temp = spots[currentEditIndex];
-        spots[currentEditIndex] = spots[newIndex];
-        spots[newIndex] = temp;
-        
-        // Update current index
-        currentEditIndex = newIndex;
-        
-        // Save & Reload
-        saveData();
-        renderItinerary();
-        alert("順序已調整");
-        closeModal('itinerary-modal');
     }
 
     function saveSpot() {
@@ -657,9 +676,9 @@
         document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.color=''; });
         const btn = document.querySelector(`.nav-btn[data-target="${id}"]`); if(btn) btn.classList.add('active');
     }
-    // Updated Key for v17 to FORCE DATA RELOAD
-    function saveData() { localStorage.setItem('bkk_2025_v17', JSON.stringify(state)); }
-    function loadData() { const d = localStorage.getItem('bkk_2025_v17'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
+    // Updated Key for v18 to FORCE DATA RELOAD
+    function saveData() { localStorage.setItem('bkk_2025_v18', JSON.stringify(state)); }
+    function loadData() { const d = localStorage.getItem('bkk_2025_v18'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
     
     // Cloud Sync
     async function autoSync() {
@@ -701,7 +720,7 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v17'); location.reload(); } }
+    function hardReset() { if(confirm("刪除所有資料?")) { localStorage.removeItem('bkk_2025_v18'); location.reload(); } }
 </script>
 </body>
 </html>
