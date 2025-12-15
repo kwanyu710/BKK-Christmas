@@ -21,7 +21,7 @@
                         'jp-green': '#8DA399',
                         'jp-red': '#D67D7D',
                         'mag-paper': '#FFFBF0',
-                        'wallet-blue': '#3B82F6', // 圖片中的藍色
+                        'wallet-blue': '#3B82F6',
                     },
                     fontFamily: {
                         sans: ['"Zen Kaku Gothic New"', '"Noto Sans TC"', 'sans-serif'],
@@ -52,7 +52,7 @@
 
         /* Card Interactions */
         .spot-card { transition: transform 0.1s, box-shadow 0.1s; cursor: pointer; }
-        .spot-card:active { transform: scale(0.97); }
+        .spot-card:active { transform: scale(0.98); }
 
         /* Bottom Sheet (Slide Up Modal) */
         .bottom-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9000; opacity: 0; pointer-events: none; transition: opacity 0.3s; display: flex; align-items: flex-end; justify-content: center; }
@@ -78,6 +78,13 @@
         .nav-btn.active i { transform: scale(1.1); transition: 0.2s; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9500; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
+        
+        /* Direct Action Buttons on Card */
+        .card-action-btn { 
+            font-size: 11px; padding: 6px 12px; border-radius: 8px; font-weight: bold; 
+            display: flex; align-items: center; gap: 4px; transition: background 0.2s;
+        }
+        .card-action-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -260,10 +267,10 @@
                      <i class="fas fa-cloud-sun text-yellow-400 text-xl"></i>
                      <div>
                          <span class="block text-sm font-bold text-jp-text">曼谷天氣預報</span>
-                         <span class="text-xs text-gray-400">OpenWeatherMap</span>
+                         <span class="text-xs text-gray-400">Google Weather</span>
                      </div>
                  </div>
-                 <a href="https://weather.com/zh-TW/weather/today/l/THBM0024:1:TH" target="_blank" class="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-600">查看</a>
+                 <a href="https://www.google.com/search?q=曼谷天氣" target="_blank" class="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-600">查看</a>
              </div>
              <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                  <h4 class="text-xs text-gray-400 mb-3 font-bold tracking-wider">緊急聯絡 EMERGENCY</h4>
@@ -401,7 +408,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
 
-    // --- FULL DATASET WITH YOUR NEW INPUTS (V22) ---
+    // --- FULL DATASET WITH YOUR NEW INPUTS (V24) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄出發", "thai_name": "สนามบิน", "desc": "FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -540,6 +547,17 @@
                         </div>
                         <i class="fas fa-chevron-right text-gray-200 text-xs"></i>
                     </div>
+                    
+                    <div class="mt-3 pt-2 border-t border-gray-50 flex gap-2">
+                        ${s.link ? `
+                        <button onclick="event.stopPropagation(); window.open('${s.link}', '_blank')" class="card-action-btn bg-red-50 text-red-500">
+                            <i class="fas fa-map-marker-alt"></i> 地圖
+                        </button>` : ''}
+                        
+                        <button onclick="event.stopPropagation(); window.open('https://www.google.com/search?q=${encodeURIComponent('曼谷 ' + (s.keyword || s.name) + ' 攻略')}', '_blank')" class="card-action-btn bg-blue-50 text-blue-500">
+                            <i class="fab fa-google"></i> 攻略
+                        </button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -673,15 +691,15 @@
 
     // --- UTILS ---
     function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');}); document.querySelector(`.nav-btn[data-target="${id}"]`).classList.add('active'); }
-    function saveData() { localStorage.setItem('bkk_2025_v23', JSON.stringify(state)); } // Updated Key V23
+    function saveData() { localStorage.setItem('bkk_2025_v24', JSON.stringify(state)); } // Updated Key V24
     function loadData() { 
-        const d = localStorage.getItem('bkk_2025_v23');
+        const d = localStorage.getItem('bkk_2025_v24');
         if(d) {
             const loaded = JSON.parse(d);
             state = { ...loaded, itinerary: DEFAULT_ITINERARY };
         }
     }
-    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v23'); location.reload(); } }
+    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v24'); location.reload(); } }
 
     // Cloud & Account Logic
     async function autoSync() { const h=document.getElementById('header-status'); if(h) h.innerText='Syncing...'; try { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && Object.keys(d).length > 0) { state = {...state, ...d}; saveData(); renderAll(); } h.innerText='曼谷市'; } catch(e){ h.innerText='Offline'; } }
