@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>2025 曼谷聖誕跨年 (V28)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'jp-bg': '#F9F8F4',
+                        'jp-text': '#4A4A4A',
+                        'jp-accent': '#C6A568',
+                        'jp-blue': '#6B8EAD',
+                        'jp-green': '#8DA399',
+                        'jp-red': '#D67D7D',
+                        'mag-paper': '#FFFBF0',
+                        'wallet-blue': '#3B82F6',
+                    },
+                    fontFamily: {
+                        sans: ['"Zen Kaku Gothic New"', '"Noto Sans TC"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
+                        'gold': '0 4px 15px rgba(198, 165, 104, 0.15)',
+                        'card': '0 8px 24px rgba(0, 0, 0, 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+   
+    <style>
+        body { background-color: #F0F0F0; font-family: 'Zen Kaku Gothic New', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+        .app-container { background-color: #F9F8F4; max-width: 430px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px; overflow-x: hidden; position: relative; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Timeline */
+        .timeline-item { position: relative; padding-left: 28px; padding-bottom: 24px; border-left: 2px solid #E5E7EB; margin-left: 10px; }
+        .timeline-item:last-child { border-left: 2px solid transparent; }
+        .timeline-dot { position: absolute; left: -7px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: #C6A568; border: 2px solid #F9F8F4; z-index: 10; }
+        .timeline-time { font-size: 11px; font-weight: bold; color: #6B8EAD; margin-bottom: 4px; display: block; margin-left: 4px; }
+
+        /* Card Interactions */
+        .spot-card { transition: transform 0.1s, box-shadow 0.1s; cursor: pointer; }
+        .spot-card:active { transform: scale(0.98); }
+
+        /* Bottom Sheet (Slide Up Modal) */
+        .bottom-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9000; opacity: 0; pointer-events: none; transition: opacity 0.3s; display: flex; align-items: flex-end; justify-content: center; }
+        .bottom-sheet-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .bottom-sheet-content { background: white; width: 100%; max-width: 430px; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 85vh; overflow-y: auto; padding-bottom: 40px; position: relative; }
+        .bottom-sheet-overlay.active .bottom-sheet-content { transform: translateY(0); }
+
+        /* Point & Speak Fullscreen */
+        .speak-modal { position: fixed; inset: 0; background: #1A202C; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; animation: popIn 0.2s; }
+        .speak-modal.active { display: flex; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Weather Scroll */
+        .weather-scroll { -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
+        .weather-item { scroll-snap-align: start; }
+
+        /* General UI */
+        .cat-btn.active { border: 1px solid #C6A568; background-color: #FFFCF5; color: #C6A568; }
+        .payer-btn.active { background-color: #FFF9E6; border: 1px solid #C6A568; color: #C6A568; font-weight: bold; }
+        .split-btn.active { background-color: #4A4A4A; color: white; }
+        .nav-btn.active { color: #C6A568; }
+        .nav-btn.active i { transform: scale(1.1); transition: 0.2s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9500; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        
+        /* Direct Action Buttons on Card */
+        .card-action-btn { 
+            font-size: 11px; padding: 6px 12px; border-radius: 8px; font-weight: bold; 
+            display: flex; align-items: center; gap: 4px; transition: background 0.2s;
+        }
+        .card-action-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <div class="fixed right-5 bottom-28 z-[100] flex flex-col gap-3">
+        <button onclick="syncToCloud('download')" class="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition hover:text-jp-blue"><i class="fas fa-cloud-download-alt"></i></button>
+        <button onclick="syncToCloud('upload')" class="w-10 h-10 rounded-full bg-jp-text shadow-lg border border-jp-text flex items-center justify-center text-white active:scale-90 transition hover:bg-gray-700"><i class="fas fa-cloud-upload-alt"></i></button>
+    </div>
+
+    <header class="sticky top-0 z-50 bg-[#F9F8F4]/95 backdrop-blur-sm px-5 py-4 flex justify-between items-end border-b border-gray-100">
+        <div>
+            <p class="text-[10px] text-gray-400 tracking-widest mb-1">DEC 23 - DEC 28</p>
+            <h1 class="text-xl font-bold text-jp-text tracking-wide leading-tight">2025 曼谷聖誕跨年<br><span class="text-jp-accent text-lg">- 泰廢了 (V28) -</span></h1>
+        </div>
+        <div class="text-center">
+             <span class="block text-[10px] text-gray-400">曼谷</span>
+             <span class="text-sm font-medium" id="header-status">Loading...</span>
+        </div>
+    </header>
+
+    <div id="tab-home" class="section active px-5 py-4">
+        
+        <div class="mb-5">
+            <h3 class="text-xs font-bold text-gray-400 mb-2 uppercase ml-1">Hourly Forecast</h3>
+            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-50 flex gap-4 overflow-x-auto hide-scrollbar weather-scroll" id="weather-strip">
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">Now</span><br><i class="fas fa-sun text-yellow-400 my-1"></i><br><span class="text-xs font-bold">30°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">14:00</span><br><i class="fas fa-cloud-sun text-yellow-400 my-1"></i><br><span class="text-xs font-bold">31°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">15:00</span><br><i class="fas fa-cloud text-gray-300 my-1"></i><br><span class="text-xs font-bold">30°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">16:00</span><br><i class="fas fa-cloud-rain text-blue-400 my-1"></i><br><span class="text-xs font-bold">29°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">17:00</span><br><i class="fas fa-cloud-showers-heavy text-blue-500 my-1"></i><br><span class="text-xs font-bold">28°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">18:00</span><br><i class="fas fa-moon text-gray-400 my-1"></i><br><span class="text-xs font-bold">27°</span></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-[24px] p-5 shadow-soft flex flex-col justify-center h-32 relative overflow-hidden">
+                <p class="text-xs text-gray-400 font-bold mb-1">匯率 (TWD/THB)</p>
+                <p class="text-[40px] font-bold text-jp-text tracking-tighter leading-none mt-1" id="home-rate-display">0.99</p>
+            </div>
+            <div class="bg-white rounded-[24px] p-5 shadow-soft flex flex-col justify-center h-32 cursor-pointer active:scale-95 transition" onclick="switchTab('tab-account')">
+                <p class="text-xs text-gray-400 font-bold mb-1">公費錢包</p>
+                <p class="text-[40px] font-bold text-wallet-blue tracking-tighter leading-none mt-1 truncate" id="home-fund-display">฿0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[24px] p-4 shadow-soft mb-6 flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500 flex-shrink-0">
+                <i class="fas fa-language text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-[10px] text-gray-400 font-bold mb-1">求生泰語 (輸入中文)</p>
+                <input type="text" id="thai-input" placeholder="不要香菜..." class="w-full text-lg font-bold text-gray-700 placeholder-gray-200 outline-none">
+            </div>
+            <button onclick="translateThai()" class="text-purple-500 font-bold text-sm px-2">
+                翻譯
+            </button>
+        </div>
+
+        <h3 class="text-sm font-bold text-gray-400 mb-3 ml-1 uppercase tracking-wider">Quick Access</h3>
+        <div class="grid grid-cols-2 gap-3 mb-20">
+            <button onclick="switchTab('tab-itinerary')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 relative overflow-hidden group active:scale-95 transition">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-jp-blue/10 rounded-full -mr-4 -mt-4"></div>
+                <i class="fas fa-map-marked-alt text-jp-blue text-xl relative z-10"></i>
+                <div>
+                    <span class="text-sm font-bold block text-jp-text">行程規劃</span>
+                    <span class="text-xs text-gray-400 font-sans" id="current-date-display">Dec 23</span>
+                </div>
+            </button>
+
+            <button onclick="switchTab('tab-account')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 border border-jp-accent/20 active:scale-95 transition">
+                <div class="flex justify-between">
+                    <i class="fas fa-calculator text-jp-red text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-sm font-bold block text-jp-text">記帳</span>
+                    <span class="text-xs text-gray-400">快速紀錄</span>
+                </div>
+            </button>
+
+             <button onclick="switchTab('tab-checklist')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 active:scale-95 transition">
+                <i class="fas fa-info-circle text-jp-accent text-xl"></i>
+                <div>
+                    <span class="text-sm font-bold block text-jp-text">資訊 & 清單</span>
+                    <span class="text-xs text-gray-400" id="home-check-progress">完成度 0%</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <div id="tab-itinerary" class="section pb-24">
+        <div class="sticky top-[72px] z-40 bg-[#F9F8F4] px-4 py-2 mb-2 shadow-sm flex items-center">
+            <div class="flex-1 overflow-x-auto hide-scrollbar flex gap-3 pr-4" id="day-tabs"></div>
+            
+            <div class="flex gap-2 pl-2 border-l border-gray-200 bg-[#F9F8F4] flex-shrink-0">
+                <button onclick="openSortModal()" class="w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-500 flex items-center justify-center shadow-sm active:scale-90 transition"><i class="fas fa-sort text-xs"></i></button>
+                <button onclick="openEditSpot()" class="w-8 h-8 rounded-full bg-jp-text text-white flex items-center justify-center shadow-md active:scale-90 transition"><i class="fas fa-plus text-xs"></i></button>
+            </div>
+        </div>
+
+        <div id="itinerary-content" class="px-5 space-y-4 min-h-[50vh]">
+            </div>
+
+        <div class="px-5 mt-8 mb-4">
+             <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase">住宿資訊</h3>
+             <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-blue mb-2">
+                 <p class="text-xs font-bold text-jp-blue">12/23 - 12/25 (唐人街)</p>
+                 <p class="text-sm font-bold text-jp-text">B2 唐人街耀華力尊尚飯店</p>
+                 <a href="https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+             </div>
+             <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-jp-accent">
+                 <p class="text-xs font-bold text-jp-accent">12/25 - 12/27 (通羅)</p>
+                 <p class="text-sm font-bold text-jp-text">曼谷茉莉花59號飯店</p>
+                 <a href="https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc" target="_blank" class="text-[10px] text-gray-400 underline"><i class="fas fa-map-marker-alt"></i> 查看地圖</a>
+             </div>
+        </div>
+    </div>
+
+    <div id="tab-account" class="section px-4 py-4 pb-24">
+        <div class="bg-white rounded-2xl shadow-gold p-5 border border-gray-50 relative">
+            <div class="absolute top-4 right-4 text-right">
+                <p class="text-[10px] text-gray-400">公費包餘額 (THB)</p>
+                <p class="text-xl font-bold text-jp-accent" id="acc-fund-display">฿ 0</p>
+            </div>
+            <h2 class="text-lg font-bold text-jp-text mb-4">新增記帳</h2>
+            <div class="flex justify-between gap-2 overflow-x-auto hide-scrollbar mb-4" id="cat-container"></div>
+            <div class="flex items-end gap-3 mb-4 border-b border-gray-100 pb-2">
+                 <div class="flex bg-gray-50 rounded-lg p-1">
+                    <button onclick="setCurrency('TWD')" id="cur-twd" class="px-3 py-1 text-xs rounded text-gray-400 font-bold">TWD</button>
+                    <button onclick="setCurrency('THB')" id="cur-thb" class="px-3 py-1 text-xs rounded bg-white shadow-sm text-jp-text font-bold">THB</button>
+                </div>
+                <input type="number" id="amt-input" placeholder="0" class="flex-1 text-right text-3xl font-bold text-jp-text bg-transparent outline-none">
+            </div>
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs text-gray-400">付款人</p>
+                    <button onclick="editUsers()" class="text-[10px] text-blue-400 underline">編輯名單</button>
+                </div>
+                <div class="flex flex-wrap gap-2" id="payer-container"></div>
+            </div>
+            <div class="mb-4">
+                <p class="text-xs text-gray-400 mb-2">分攤模式</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setSplit('shared')" id="split-shared" class="split-btn active py-2 rounded-lg text-xs border border-gray-200">共同分攤 (扣公費/記帳)</button>
+                    <button onclick="setSplit('deposit')" id="split-deposit" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">公費入金 (存錢)</button>
+                    <button onclick="setSplit('own')" id="split-own" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">個人自付</button>
+                    <button onclick="setSplit('advance')" id="split-advance" class="split-btn py-2 rounded-lg text-xs border border-gray-200 text-gray-400">幫人代墊</button>
+                </div>
+            </div>
+            <div class="flex gap-2 mb-4">
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-400"><i class="fas fa-camera"></i></button>
+                <input type="text" id="note-input" placeholder="備註 (如: 7-11)" class="flex-1 bg-gray-50 rounded-lg px-3 text-sm outline-none">
+            </div>
+            <button onclick="submitTx()" class="w-full bg-jp-text text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition">新增紀錄</button>
+        </div>
+        <div class="mt-6">
+            <div class="flex justify-between items-center mb-2 px-1">
+                 <h3 class="text-sm font-bold text-gray-500">近期紀錄</h3>
+                <button onclick="clearTx()" class="text-xs text-red-300">清空</button>
+            </div>
+            <div id="tx-history" class="space-y-2 pb-10"></div>
+        </div>
+    </div>
+    
+    <div id="tab-checklist" class="section px-5 py-4 pb-24">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">行李清單</h2>
+            <div class="flex gap-2">
+                <button onclick="addChecklistCategory()" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"><i class="fas fa-folder-plus text-xs"></i></button>
+                <button onclick="addChecklistItem()" class="w-8 h-8 rounded-full bg-jp-accent text-white flex items-center justify-center shadow-md"><i class="fas fa-plus text-xs"></i></button>
+            </div>
+        </div>
+         <div id="checklist-container"></div>
+         
+         <h3 class="font-bold text-lg mt-10 mb-4 text-jp-text flex items-center"><i class="fas fa-info-circle mr-2 text-jp-blue"></i>實用資訊 (INFO)</h3>
+         <div class="space-y-4">
+             <div class="bg-white rounded-xl p-4 shadow-sm flex items-center justify-between border border-gray-100">
+                 <div class="flex items-center gap-3">
+                     <i class="fas fa-cloud-sun text-yellow-400 text-xl"></i>
+                     <div>
+                         <span class="block text-sm font-bold text-jp-text">曼谷天氣預報</span>
+                         <span class="text-xs text-gray-400">Google Weather</span>
+                     </div>
+                 </div>
+                 <a href="https://www.google.com/search?q=曼谷天氣" target="_blank" class="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-600">查看</a>
+             </div>
+             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                 <h4 class="text-xs text-gray-400 mb-3 font-bold tracking-wider">緊急聯絡 EMERGENCY</h4>
+                 <div class="space-y-3">
+                    <div class="flex justify-between text-sm border-b border-gray-50 pb-2 items-center">
+                        <span class="flex items-center gap-2"><i class="fas fa-user-shield text-gray-400 w-4"></i>觀光警察</span>
+                        <a href="tel:1155" class="font-bold text-red-500 bg-red-50 px-2 py-1 rounded">1155</a>
+                    </div>
+                    <div class="flex justify-between text-sm border-b border-gray-50 pb-2 items-center">
+                        <span class="flex items-center gap-2"><i class="fas fa-ambulance text-gray-400 w-4"></i>救護車</span>
+                        <a href="tel:1669" class="font-bold text-red-500 bg-red-50 px-2 py-1 rounded">1669</a>
+                    </div>
+                    <div class="flex justify-between text-sm items-center">
+                        <span class="flex items-center gap-2"><i class="fas fa-flag text-gray-400 w-4"></i>駐泰代表處</span>
+                        <a href="tel:+66816664006" class="font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded">+66-81-666-4006</a>
+                    </div>
+                </div>
+             </div>
+             <div class="bg-mag-paper rounded-xl p-4 shadow-sm border border-amber-100">
+                 <h4 class="text-xs text-amber-600 mb-3 font-bold tracking-wider"><i class="fas fa-exclamation-triangle mr-1"></i>旅遊禁忌 & 注意</h4>
+                 <ul class="text-xs text-jp-text space-y-2 list-disc pl-4 font-medium leading-relaxed">
+                     <li><strong class="text-purple-600">買酒時間限制</strong>：超商/超市僅 <span class="font-bold">11:00-14:00</span> 與 <span class="font-bold">17:00-24:00</span> 可販售酒精飲品。佛節全日禁酒。</li>
+                     <li><strong class="text-red-500">電子菸全泰國違法</strong>：攜帶或使用皆可能面臨高額罰款或監禁，切勿嘗試。</li>
+                     <li><strong class="text-green-600">大麻相關</strong>：雖已除罪化，但在公共場所吸食仍屬違法擾民，且不可攜帶出境回台。</li>
+                     <li><strong class="text-jp-blue">寺廟穿著</strong>：參觀鄭王廟、臥佛寺等，不可穿無袖、短褲/短裙 (需過膝)。</li>
+                     <li><strong class="text-gray-500">小費文化</strong>：按摩/飯店建議給 20-50 泰銖紙鈔，避免給硬幣 (視為施捨)。</li>
+                 </ul>
+             </div>
+         </div>
+    </div>
+
+    <div id="tab-settings" class="section px-5 py-4 pb-24">
+        <h2 class="text-xl font-bold mb-6">設定</h2>
+        <div class="bg-white rounded-2xl shadow-soft p-5 mb-6 border border-jp-green/30 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-jp-green/10 rounded-full -mr-6 -mt-6"></div>
+            <h3 class="font-bold text-jp-text mb-2"><i class="fab fa-google-drive text-jp-green mr-2"></i>雲端資料庫 (Google Sheets)</h3>
+            <p class="text-xs text-gray-500 mb-4 leading-relaxed">同步至 Google 試算表。<br><span class="text-[10px] text-gray-400">需連網。點擊下載會覆蓋本機資料。</span></p>
+            <div class="flex gap-3">
+                 <button onclick="syncToCloud('upload')" id="btn-upload" class="flex-1 bg-jp-text text-white py-3 rounded-lg text-sm shadow hover:opacity-90 active:scale-95 transition flex items-center justify-center gap-2"><i class="fas fa-cloud-upload-alt"></i> 上傳備份</button>
+                <button onclick="syncToCloud('download')" id="btn-download" class="flex-1 bg-white border border-jp-text text-jp-text py-3 rounded-lg text-sm shadow hover:bg-gray-50 active:scale-95 transition flex items-center justify-center gap-2"><i class="fas fa-cloud-download-alt"></i> 下載覆蓋</button>
+            </div>
+            <p id="sync-status" class="text-[10px] text-center mt-2 text-gray-400 h-4"></p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-soft p-5 mb-6 border border-jp-blue/20">
+            <h3 class="font-bold text-jp-blue mb-2"><i class="fas fa-qrcode mr-2"></i>快速轉移 (無網路用)</h3>
+            <div class="flex gap-3">
+                 <button onclick="exportData()" class="flex-1 bg-jp-blue text-white py-3 rounded-lg text-sm shadow hover:opacity-90"><i class="fas fa-copy mr-1"></i> 複製代碼</button>
+                <button onclick="openImportModal()" class="flex-1 bg-gray-600 text-white py-3 rounded-lg text-sm shadow hover:opacity-90"><i class="fas fa-paste mr-1"></i> 貼上匯入</button>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+             <button onclick="hardReset()" class="text-xs text-red-400 underline p-2">重置所有 App 資料 (慎用)</button>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-6 left-5 right-5 h-16 bg-white/95 backdrop-blur rounded-2xl flex justify-around items-center shadow-gold z-50 border border-gray-100">
+        <button onclick="switchTab('tab-home')" class="nav-btn active flex flex-col items-center gap-1 text-gray-400" data-target="tab-home">
+            <i class="fas fa-home text-lg"></i><span class="text-[10px]">首頁</span>
+        </button>
+        <button onclick="switchTab('tab-itinerary')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-itinerary">
+            <i class="fas fa-map-marked-alt text-lg"></i><span class="text-[10px]">行程</span>
+        </button>
+        <div class="relative -top-6">
+            <button onclick="switchTab('tab-account')" class="w-14 h-14 bg-jp-text rounded-full shadow-lg flex items-center justify-center text-white text-xl transform hover:scale-105 transition active:scale-95 border-4 border-[#F9F8F4]">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <button onclick="switchTab('tab-checklist')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-checklist">
+            <i class="fas fa-info-circle text-lg"></i><span class="text-[10px]">資訊</span>
+        </button>
+        <button onclick="switchTab('tab-settings')" class="nav-btn flex flex-col items-center gap-1 text-gray-400" data-target="tab-settings">
+            <i class="fas fa-cog text-lg"></i><span class="text-[10px]">設定</span>
+        </button>
+    </nav>
+
+    <div id="import-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">貼上代碼</h3><textarea id="import-area" class="w-full h-32 bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs mb-4"></textarea><div class="flex gap-2"><button onclick="closeModal('import-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmImport()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
+    <div id="advance-modal" class="modal-overlay"><div class="bg-white w-4/5 rounded-2xl p-5 shadow-2xl"><h3 class="font-bold text-lg mb-2">幫誰代墊?</h3><div id="advance-list" class="space-y-2 mb-4"></div><div class="flex gap-2"><button onclick="closeModal('advance-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button><button onclick="confirmAdvance()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">確定</button></div></div></div>
+    
+    <div id="sort-modal" class="modal-overlay">
+        <div class="bg-white w-[90%] rounded-2xl p-5 shadow-2xl max-h-[80vh] flex flex-col">
+            <h3 class="font-bold text-lg mb-4 text-jp-text">調整順序</h3>
+            <p class="text-xs text-gray-400 mb-2">長按並拖曳即可排序</p>
+            <div id="sort-list-container" class="overflow-y-auto flex-1 mb-4"></div>
+            <div class="flex gap-2">
+                <button onclick="closeModal('sort-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
+                <button onclick="confirmSort()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">儲存順序</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="itinerary-modal" class="modal-overlay">
+        <div class="bg-white w-[90%] rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-lg mb-4 text-jp-text" id="spot-modal-title">編輯景點</h3>
+            <input type="hidden" id="spot-index">
+            <div class="space-y-3">
+                <div><label class="text-xs text-gray-400 block mb-1">時間</label><input type="text" id="spot-time" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm"></div>
+                <div><label class="text-xs text-gray-400 block mb-1">名稱</label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm font-bold"></div>
+                <div><label class="text-xs text-gray-400 block mb-1">泰文名稱 (給司機)</label><input type="text" id="spot-thai" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm text-jp-blue font-serif"></div>
+                <div><label class="text-xs text-gray-400 block mb-1">簡短描述</label><input type="text" id="spot-desc" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm"></div>
+                <div><label class="text-xs text-jp-accent block mb-1">📖 景點故事 (深度介紹)</label><textarea id="spot-deep-desc" class="w-full bg-mag-paper border border-amber-100 rounded p-2 text-xs h-24 placeholder-gray-300 leading-relaxed" placeholder="輸入歷史背景、冷知識..."></textarea></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-xs text-gray-400 block mb-1">Google Map 網址</label><input type="text" id="spot-link" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-xs" placeholder="https://..."></div>
+                    <div><label class="text-xs text-gray-400 block mb-1">攻略關鍵字</label><input type="text" id="spot-keyword" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-xs" placeholder="搜尋用"></div>
+                </div>
+                 <div><label class="text-xs text-gray-400 block mb-1">Icon (FontAwesome)</label><input type="text" id="spot-icon" class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-xs" value="fa-map-marker-alt"></div>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button onclick="deleteSpot()" id="btn-delete-spot" class="px-4 py-2 rounded-lg bg-red-50 text-red-400 text-sm"><i class="fas fa-trash"></i></button>
+                <button onclick="closeModal('itinerary-modal')" class="flex-1 py-2 rounded-lg border border-gray-200 text-sm">取消</button>
+                <button onclick="saveSpot()" class="flex-1 py-2 rounded-lg bg-jp-text text-white text-sm">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detail-sheet" class="bottom-sheet-overlay">
+        <div class="bottom-sheet-content" onclick="event.stopPropagation()">
+            <div class="w-full flex justify-center pt-3 pb-1" onclick="closeDetailSheet()">
+                <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+            </div>
+            
+            <div id="sheet-inner" class="px-6 py-4">
+                </div>
+        </div>
+        <div class="absolute inset-0 z-[-1]" onclick="closeDetailSheet()"></div>
+    </div>
+
+    <div id="speak-modal" class="speak-modal" onclick="this.classList.remove('active')">
+        <p class="text-gray-400 text-sm mb-6">給司機 / 店員看</p>
+        <h1 id="speak-text" class="text-white text-5xl font-bold leading-snug break-words">...</h1>
+        <p class="text-gray-600 text-xs mt-10">點擊任意處關閉</p>
+    </div>
+
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
+
+    // --- V28: ABSOLUTE FINAL ITINERARY (Day 2/3 Fixed) ---
+    const DEFAULT_ITINERARY = [
+        { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
+            { "time": "18:00", "name": "高雄出發", "thai_name": "สนามบิน", "desc": "FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
+            { "time": "22:30", "name": "機場包車接機", "desc": "前往 B2 飯店", "icon": "fa-car", "color": "text-green-600", "highlight": true, "deep_desc": "泰國高速公路 (Tollway) 通常需要乘客額外支付過路費 (約 50-70 泰銖)，司機過收費站時會跟你要錢，這是正常的喔！準備好小鈔。" }, 
+            { "time": "Late", "name": "唐人街宵夜", "thai_name": "เยาวราช", "desc": "Check-in 後覓食", "icon": "fa-utensils", "color": "text-orange-500", "keyword": "曼谷唐人街美食", "deep_desc": "曼谷唐人街 (耀華力路) 是全球最古老的唐人街之一。這裡晚上的霓虹燈招牌有種 80 年代香港電影的氛圍。必吃推薦：T&K 海鮮（綠色制服）、粿汁（Kway Chap）。" }, 
+            { "time": "Sleep", "name": "B2 唐人街飯店", "thai_name": "โรงแรมบีทู", "desc": "入住休息", "link": "https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc", "keyword": "", "icon": "fa-bed", "color": "text-gray-500", "deep_desc": "B2 是泰國知名的平價連鎖飯店，主打工業風設計。唐人街分店位置極佳，走路就能到 MRT Wat Mangkon 站，且周邊充滿老曼谷的生活氣息。" } 
+        ] },
+        { "day": 2, "date": "12/24 (三)", "desc": "平安夜特企", "spots": [ 
+            { "time": "09:00", "name": "臥佛寺", "thai_name": "วัดโพธิ์", "desc": "必拍古蹟", "link": "https://www.google.com/maps/place/Bangkok5", "keyword": "臥佛寺", "icon": "fa-gopuram", "color": "text-gray-500", "deep_desc": "擁有全泰國最大的臥佛像 (長46公尺)。這裡也是泰式按摩的發源地，逛累了可以直接在寺內的按摩學校體驗最正宗的古法按摩。" }, 
+            { "time": "11:00", "name": "鄭王廟", "thai_name": "วัดอรุณ", "desc": "拍照參觀", "link": "https://maps.app.goo.gl/4t2JkPEY1yKKBtoq5?g_st=ipc", "keyword": "鄭王廟", "icon": "fa-store", "color": "text-gray-500", "deep_desc": "又稱黎明寺 (Wat Arun)。不同於泰國常見的金碧輝煌，這裡以白色為底，鑲嵌著無數中國運來的彩色碎瓷片。日落時分的剪影被譽為曼谷最美景色之一。" }, 
+            { "time": "13:00", "name": "王朗市場", "thai_name": "ตลาดวังหลัง", "desc": "在地小吃", "link": "https://maps.app.goo.gl/Q43nUqg7KE9dRj8Z9?g_st=ipc", "keyword": "王朗市場", "icon": "fa-map-marker-alt", "color": "text-gray-500", "deep_desc": "Wang Lang Market 是當地大學生和護士最愛的市場，觀光客較少，價格非常親民！必買：炸麵包 (Wang Lang Bakery)、泰式甜點、烤肉串。" },
+            { "time": "16:00", "name": "Iconsiam", "thai_name": "ไอคอนสยาม", "desc": "甜點 & 拍照", "icon": "fa-camera", "color": "text-blue-500", "link": "https://www.google.com/maps/place/Bangkok6", "deep_desc": "曼谷地標級百貨。推薦到 G 樓 SookSiam 拍室內水上市場，或者去頂樓觀景台看河景。必吃甜點：After You 蜜糖吐司、Karun 泰式奶茶。" },
+            { "time": "19:00", "name": "考山路晚餐", "thai_name": "ถนนข้าวสาร", "desc": "平安夜狂歡", "icon": "fa-beer", "color": "text-red-500", "link": "https://www.google.com/maps/place/Bangkok7", "deep_desc": "Khao San Road 是背包客的天堂。平安夜這裡會非常熱鬧，充滿歐美遊客。隨便找一家露天酒吧 (如 The One) 吃飯喝酒，感受曼谷的節日氣氛。記得試試路邊的 Pad Thai！" },
+            { "time": "21:30", "name": "回飯店", "desc": "休息", "icon": "fa-home", "color": "text-gray-400" }
+        ] },
+        { "day": 3, "date": "12/25 (四)", "desc": "聖誕文青 & 遊船", "spots": [ 
+            { "time": "09:30", "name": "文青散策", "thai_name": "เจริญกรุง & ตลาดน้อย", "desc": "嵩越路/石龍軍/Talat Noi", "link": "https://www.google.com/maps/place/Bangkok8", "icon": "fa-palette", "color": "text-gray-500", "deep_desc": "這是一條絕佳的散步路線：從嵩越路 (Song Wat) 的老建築咖啡廳開始，走到石龍軍路 (Charoen Krung) 吃百年老店，最後鑽進 Talat Noi 的巷弄拍街頭塗鴉與廢棄古董車。" }, 
+            { "time": "12:30", "name": "午餐自理", "desc": "沿途探店", "icon": "fa-utensils", "color": "text-gray-500", "deep_desc": "這一帶有很多隱藏版美食，如：Ped Tun Chao Tha (燉鴨)、Jok Prince (王子戲院豬肉粥)。看到想吃的就走進去吧！" }, 
+            { "time": "16:00", "name": "前往 Asiatique", "thai_name": "เอเชียทีค (Asiatique)", "desc": "碼頭 7號倉庫登船", "link": "https://www.google.com/maps/place/Bangkok9", "icon": "fa-ship", "color": "text-blue-600", "highlight": true, "deep_desc": "請務必準時！昭披耶公主號日落遊船 (Sunset Cruise) 登船點在 Asiatique 碼頭 (7號倉庫)。16:45 開始登船，17:00 準時出發。建議提早到 Asiatique 逛逛。" }, 
+            { "time": "17:00", "name": "日落遊船", "thai_name": "เจ้าพระยาปริ๊นเซส", "desc": "Buffet 晚餐 (17:00-18:30)", "icon": "fa-wine-glass", "color": "text-orange-500", "deep_desc": "在船上欣賞曼谷夕陽與夜景轉換的魔幻時刻。途經鄭王廟、大皇宮等在河岸邊的地標。食物是自助餐形式，亦有現場 Live Band 演奏。" },
+            { "time": "19:00", "name": "搬家換飯店", "desc": "前往通羅 (Jasmine 59)", "icon": "fa-suitcase", "color": "text-purple-500", "link": "https://maps.app.goo.gl/DmVbJdwrbkwQ7p8K6?g_st=ipc", "deep_desc": "遊船結束後，回 B2 拿行李，移動到通羅區 (Thong Lor)。這區晚上很熱鬧，Check-in 後若有體力可以去附近的酒吧小酌。" }
+        ] },
+        { "day": 4, "date": "12/26 (五)", "desc": "水上市場一日遊", "spots": [ 
+            { "time": "08:00", "name": "包車出發", "desc": "飯店大廳集合 (準時!)", "icon": "fa-car", "color": "text-red-500", "highlight": true, "deep_desc": "今天的行程距離曼谷市區較遠 (約 1.5 - 2 小時車程)，請大家務必準時，以免塞車延誤火車進站的時間。" }, 
+            { "time": "10:00", "name": "美功鐵道市場", "thai_name": "ตลาดร่มหุบ", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500", "deep_desc": "這裡被稱為「世界上最危險的市場」。每天有 8 班火車經過，攤販會在火車鳴笛瞬間，熟練地收起遮陽棚與籃子，火車一過又瞬間恢復原狀，是泰國獨有的奇景。" }, 
+            { "time": "12:00", "name": "丹嫩莎水上市場", "thai_name": "ดำเนินสะดวก", "desc": "手搖船體驗", "link": "https://maps.app.goo.gl/n4JDTNY2q7Bqkrxw8?g_st=ipc", "keyword": "丹嫩莎朵", "icon": "fa-water", "color": "text-gray-500", "deep_desc": "这是 007 電影《金槍人》的拍攝場景。雖然商業化程度高，但卻是體驗「手搖船」塞船的最佳地點。記得：船上的東西通常比岸上貴，殺價要從 3 折開始殺！" }, 
+            { "time": "14:00", "name": "樹中廟", "thai_name": "วัดบางกุ้ง", "desc": "靈驗古廟", "link": "https://maps.app.goo.gl/z8xrK7NTUiyW4P6n8?g_st=ipc", "keyword": "樹中廟", "icon": "fa-vihara", "color": "text-gray-500", "deep_desc": "這是一座被菩提樹根完全包覆的佛殿，已有 400 多年歷史。相傳鄭王在攻打緬甸軍之前曾來此祈求勝利，結果大勝，因此被視為極其靈驗的求勝之廟。" }, 
+            { "time": "16:00", "name": "返回曼谷", "desc": "Siam / Big C 或 飯店", "icon": "fa-home", "color": "text-gray-500", "deep_desc": "回程通常會遇到曼谷著名的下班尖峰車潮，這段時間可以在車上補眠，或討論晚餐吃什麼。" } 
+        ] },
+        { "day": 5, "date": "12/27 (六)", "desc": "返台 / 自由", "spots": [ 
+            { "time": "10:00", "name": "恰圖恰市集", "thai_name": "ตลาดนัดจตุจักร", "desc": "最後採買", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500", "deep_desc": "Chatuchak 是世界最大的週末市集，擁有一萬五千個攤位。分區複雜，建議看到喜歡的就買，因為回頭很難再找到同一家店！這裡也是買香氛、手工藝品和紀念品的最佳地點。" }, 
+            { "time": "12:00", "name": "午餐自理", "desc": "市集內或周邊", "icon": "fa-utensils", "color": "text-gray-500", "deep_desc": "恰圖恰內有非常多小吃攤，如椰子冰淇淋、西班牙燉飯 (Viva 8)。" },
+            { "time": "15:00", "name": "Big C 採購", "thai_name": "บิ๊กซี", "desc": "伴手禮掃貨", "icon": "fa-shopping-cart", "color": "text-green-500", "deep_desc": "推薦買：手標泰式茶包、大哥豆、Pocky 芒果口味、Bento 魷魚片。" },
+            { "time": "19:00", "name": "晚餐: Krua Khun Puk", "thai_name": "ครัวคุณปุ๊ก", "desc": "泰式熱炒", "link": "https://www.google.com/maps/place/Bangkok4", "icon": "fa-fire", "color": "text-orange-500", "deep_desc": "位於 Nana 站附近的平價人氣熱炒店。營業到很晚，必點：炒含羞草、冬蔭功、烤豬頸肉。" },
+            { "time": "Flight", "name": "前往機場", "thai_name": "สนามบิน", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500", "deep_desc": "若有在百貨公司申請退稅 (VAT Refund)，記得先在機場大廳的退稅辦公室蓋章，過了海關後再去領錢喔！" } 
+        ] }
+    ];
+
+    let state = {
+        users: ["冠仔","小芳","玠宇","婕茹","芝伶","公費包"],
+        fundBalance: 0,
+        currency: 'THB',
+        transactions: [],
+        checklist: [{"title":"證件","items":[{"name":"護照","checked":true},{"name":"eSIM","checked":false},{"name":"保險單","checked":false}]}],
+        itinerary: DEFAULT_ITINERARY, 
+        currentDay: 0
+    };
+    let sortable = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            loadData();
+            updateDate();
+            fetchWeather(); // Simulated for now
+            fetchExchangeRate();
+            renderDayTabs();
+            renderItinerary();
+            renderAccCats();
+            renderPayers();
+            updateFundDisplay();
+            renderHistory();
+            renderChecklist();
+            autoSync();
+        } catch (e) { console.error(e); }
+    });
+
+    // --- LOGIC ---
+    function updateDate() { document.getElementById('current-date-display').innerText = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}); }
+    
+    // MOCK WEATHER (Horizontal)
+    function fetchWeather() {
+        const strip = document.getElementById('weather-strip');
+        // Static mock data mimicking iPhone forecast
+        const hours = [
+            {t:'Now', i:'fa-sun', temp:'30°'},
+            {t:'14:00', i:'fa-sun', temp:'31°'},
+            {t:'15:00', i:'fa-cloud-sun', temp:'31°'},
+            {t:'16:00', i:'fa-cloud', temp:'30°'},
+            {t:'17:00', i:'fa-cloud-rain', temp:'29°'},
+            {t:'18:00', i:'fa-cloud-showers-heavy', temp:'28°'},
+            {t:'19:00', i:'fa-moon', temp:'27°'},
+            {t:'20:00', i:'fa-moon', temp:'27°'},
+        ];
+        strip.innerHTML = hours.map(h => `
+            <div class="flex-shrink-0 text-center min-w-[60px] flex flex-col items-center justify-center">
+                <span class="text-[10px] text-gray-400 font-bold">${h.t}</span>
+                <i class="fas ${h.i} text-xl my-2 ${h.i.includes('sun')?'text-yellow-400':h.i.includes('rain')?'text-blue-400':'text-gray-300'}"></i>
+                <span class="text-sm font-bold text-jp-text">${h.temp}</span>
+            </div>
+        `).join('');
+        document.getElementById('header-status').innerText = "30°C 晴";
+    }
+
+    async function fetchExchangeRate() {
+        try {
+            const res = await fetch('https://api.exchangerate-api.com/v4/latest/THB');
+            const data = await res.json();
+            const rate = data.rates.TWD; 
+            document.getElementById('home-rate-display').innerText = rate.toFixed(2);
+        } catch { document.getElementById('home-rate-display').innerText = "0.99"; }
+    }
+
+    function translateThai() {
+        const txt = document.getElementById('thai-input').value;
+        if(txt) window.open(`https://translate.google.com/?sl=zh-TW&tl=th&text=${encodeURIComponent(txt)}&op=translate`, '_blank');
+    }
+
+    // Itinerary Rendering (Card Style)
+    function renderDayTabs() {
+        document.getElementById('day-tabs').innerHTML = state.itinerary.map((d, i) => `
+            <button onclick="setDay(${i})" class="flex-shrink-0 px-5 py-2 rounded-2xl border transition duration-200 ${state.currentDay===i ? 'bg-jp-text text-white border-jp-text shadow-md transform scale-105' : 'bg-white text-gray-400 border-gray-100'}">
+                <span class="block text-xs font-bold">Day ${d.day}</span>
+                <span class="text-[10px] whitespace-nowrap opacity-80">${d.date.split(' ')[0]}</span>
+            </button>
+        `).join('');
+    }
+    function setDay(i) { state.currentDay = i; renderDayTabs(); renderItinerary(); }
+    
+    function renderItinerary() {
+        const d = state.itinerary[state.currentDay];
+        const c = document.getElementById('itinerary-content');
+        
+        if(!d.spots || d.spots.length === 0) { c.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">點擊 + 新增行程</div>`; return; }
+        
+        c.innerHTML = d.spots.map((s, idx) => `
+            <div class="timeline-item group" data-id="${idx}">
+                <div class="timeline-dot" style="${s.highlight ? 'background:#ef4444; border-color:#fee2e2;' : ''}"></div>
+                <span class="timeline-time ${s.highlight ? 'text-red-500' : ''}">${s.time}</span>
+                <div onclick="openDetailSheet(${idx})" class="spot-card bg-white rounded-2xl p-4 shadow-card border border-white relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center flex-shrink-0 text-xl text-gray-400 shadow-inner">
+                            <i class="fas ${s.icon} ${s.color||''}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-base font-bold text-jp-text truncate">${s.name}</h3>
+                            <p class="text-xs text-gray-400 truncate">${s.desc}</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-200 text-xs"></i>
+                    </div>
+                    
+                    <div class="mt-3 pt-2 border-t border-gray-50 flex gap-2">
+                        ${s.link ? `
+                        <button onclick="event.stopPropagation(); window.open('${s.link}', '_blank')" class="card-action-btn bg-red-50 text-red-500">
+                            <i class="fas fa-map-marker-alt"></i> 地圖
+                        </button>` : ''}
+                        
+                        <button onclick="event.stopPropagation(); window.open('https://www.google.com/search?q=${encodeURIComponent('曼谷 ' + (s.keyword || s.name) + ' 攻略')}', '_blank')" class="card-action-btn bg-blue-50 text-blue-500">
+                            <i class="fab fa-google"></i> 攻略
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // --- BOTTOM SHEET LOGIC ---
+    function openDetailSheet(index) {
+        const spot = state.itinerary[state.currentDay].spots[index];
+        const sheet = document.getElementById('detail-sheet');
+        const content = document.getElementById('sheet-inner');
+        
+        content.innerHTML = `
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <span class="px-3 py-1 bg-gray-100 rounded-lg text-[10px] text-gray-500 font-bold mb-2 inline-block">${spot.time}</span>
+                    <h2 class="text-2xl font-bold text-jp-text leading-tight">${spot.name}</h2>
+                    <p class="text-sm text-jp-blue font-serif mt-1">${spot.thai_name || ''}</p>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-3xl shadow-inner">
+                    <i class="fas ${spot.icon} ${spot.color}"></i>
+                </div>
+            </div>
+            
+            <button onclick="openSpeak('${spot.thai_name || spot.name}')" class="w-full bg-jp-text text-white rounded-2xl py-4 mb-6 shadow-lg active:scale-95 transition flex items-center justify-center gap-3">
+                <i class="fas fa-comment-dots text-xl"></i>
+                <span class="font-bold text-base">給司機 / 店員看</span>
+            </button>
+            
+            <div class="prose prose-sm text-gray-600 leading-relaxed text-sm mb-6 bg-mag-paper p-5 rounded-2xl border border-yellow-50 shadow-sm">
+                <h4 class="text-xs font-bold text-amber-500 mb-2 uppercase tracking-widest">About this place</h4>
+                ${spot.deep_desc ? spot.deep_desc.replace(/\n/g, '<br>') : '暫無深度介紹...'}
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <a href="${spot.link || '#'}" target="_blank" class="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fas fa-map-marker-alt text-red-400"></i> Google Map
+                </a>
+                <a href="https://www.google.com/search?q=${encodeURIComponent('曼谷 ' + spot.name + ' 攻略')}" target="_blank" class="flex items-center justify-center gap-2 bg-gray-50 py-3 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fab fa-google text-blue-400"></i> 搜尋攻略
+                </a>
+            </div>
+            
+            <button onclick="openEditSpot(${index}); closeDetailSheet();" class="w-full py-3 text-xs text-gray-400 font-bold hover:text-jp-text transition">編輯此行程</button>
+        `;
+        
+        sheet.classList.add('active');
+    }
+    
+    function closeDetailSheet() {
+        document.getElementById('detail-sheet').classList.remove('active');
+    }
+    
+    function openSpeak(text) {
+        if(!text) return alert("無泰文名稱");
+        document.getElementById('speak-text').innerText = text;
+        document.getElementById('speak-modal').classList.add('active');
+    }
+
+    // --- SORTING ---
+    function openSortModal() {
+        const spots = state.itinerary[state.currentDay].spots;
+        if(!spots || spots.length === 0) return alert("沒有行程可排序");
+        
+        const container = document.getElementById('sort-list-container');
+        container.innerHTML = spots.map((s, i) => `
+            <div class="bg-gray-50 p-3 mb-2 rounded-xl flex items-center justify-between" data-id="${i}">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <i class="fas ${s.icon} text-gray-400 w-4"></i>
+                    <span class="font-bold text-sm text-gray-600 truncate">${s.name}</span>
+                </div>
+                <i class="fas fa-bars text-gray-300 cursor-move p-2"></i>
+            </div>
+        `).join('');
+        const modal = document.getElementById('sort-modal');
+        modal.classList.add('open');
+        
+        if(sortable) sortable.destroy();
+        sortable = new Sortable(container, { animation: 150, handle: '.fa-bars' });
+    }
+
+    function confirmSort() {
+        const newOrder = sortable.toArray();
+        const currentSpots = state.itinerary[state.currentDay].spots;
+        state.itinerary[state.currentDay].spots = newOrder.map(index => currentSpots[parseInt(index)]);
+        saveData();
+        renderItinerary();
+        closeModal('sort-modal');
+    }
+
+    // --- EDITING ---
+    let currentEditIndex = -1;
+    function openEditSpot(index = -1) {
+        currentEditIndex = index;
+        document.getElementById('itinerary-modal').classList.add('open');
+        const fields = ['time', 'name', 'thai', 'deep-desc', 'icon'];
+        const isNew = index === -1;
+        document.getElementById('spot-modal-title').innerText = isNew ? "新增行程" : "修改行程";
+        document.getElementById('btn-delete-spot').style.display = isNew ? 'none' : 'block';
+        if (isNew) {
+            fields.forEach(f => { const el = document.getElementById('spot-'+f); if(el) el.value = (f==='icon'?'fa-map-marker-alt':''); });
+        } else {
+            const s = state.itinerary[state.currentDay].spots[index];
+            fields.forEach(f => {
+                const el = document.getElementById('spot-'+f);
+                if (f === 'deep-desc') { if(el) el.value = s.deep_desc || ''; }
+                else if (f === 'thai') { if(el) el.value = s.thai_name || ''; }
+                else if(el) el.value = s[f] || (f==='icon'?'fa-map-marker-alt':'');
+            });
+        }
+    }
+
+    function saveSpot() {
+        const s = {
+            time: document.getElementById('spot-time').value,
+            name: document.getElementById('spot-name').value,
+            thai_name: document.getElementById('spot-thai').value,
+            deep_desc: document.getElementById('spot-deep-desc').value,
+            icon: document.getElementById('spot-icon').value,
+            desc: document.getElementById('spot-name').value, 
+            color: 'text-gray-500'
+        };
+        if (!s.name) return alert("請輸入名稱");
+        if (!state.itinerary[state.currentDay].spots) state.itinerary[state.currentDay].spots = [];
+        
+        if (currentEditIndex === -1) { state.itinerary[state.currentDay].spots.push(s); }
+        else { state.itinerary[state.currentDay].spots[currentEditIndex] = s; }
+        
+        saveData(); renderItinerary(); closeModal('itinerary-modal');
+    }
+    function deleteSpot() { if(confirm("刪除?")) { state.itinerary[state.currentDay].spots.splice(currentEditIndex, 1); saveData(); renderItinerary(); closeModal('itinerary-modal'); } }
+
+    // --- UTILS ---
+    function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');}); document.querySelector(`.nav-btn[data-target="${id}"]`).classList.add('active'); }
+    function saveData() { localStorage.setItem('bkk_2025_v28_absolute', JSON.stringify(state)); } // Updated Key V28
+    function loadData() { 
+        const d = localStorage.getItem('bkk_2025_v28_absolute');
+        if(d) {
+            const loaded = JSON.parse(d);
+            // MERGE strategy: Keep user transactions/checklist, but force-update itinerary from DEFAULT_ITINERARY to ensure new data is seen
+            state = { ...loaded, itinerary: DEFAULT_ITINERARY };
+        }
+    }
+    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v28_absolute'); location.reload(); } }
+
+    // Cloud & Account Logic
+    async function autoSync() { const h=document.getElementById('header-status'); if(h) h.innerText='Syncing...'; try { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && Object.keys(d).length > 0) { state = {...state, ...d}; saveData(); renderAll(); } h.innerText='曼谷市'; } catch(e){ h.innerText='Offline'; } }
+    async function syncToCloud(action) { 
+        try {
+            if(action==='upload') { await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(state)}); alert("上傳請求已發送"); }
+            else { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && confirm("覆蓋本機?")) { state={...state, ...d}; saveData(); location.reload(); } }
+        } catch(e) { alert("同步錯誤"); }
+    }
+
+    // Account Rendering
+    let acc = { cat:'餐飲', payer:'公費包', cur:'THB' };
+    function renderAccCats() { const cats=[{n:'餐飲',i:'fa-utensils'},{n:'交通',i:'fa-car'},{n:'購物',i:'fa-shopping-bag'},{n:'住宿',i:'fa-bed'},{n:'其他',i:'fa-ellipsis-h'}]; document.getElementById('cat-container').innerHTML = cats.map((c,i)=>`<button onclick="acc.cat='${c.n}';renderAccCats();" class="flex-shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border transition ${acc.cat===c.n?'bg-jp-text text-white border-jp-text shadow-lg':'bg-white text-gray-400 border-gray-100'}"><i class="fas ${c.i} mb-1"></i><span class="text-xs font-bold">${c.n}</span></button>`).join(''); }
+    function renderPayers() { document.getElementById('payer-container').innerHTML = state.users.map(u=>`<button onclick="acc.payer='${u}';renderPayers();" class="px-4 py-2 rounded-xl text-xs font-bold border transition ${acc.payer===u?'bg-jp-accent text-white border-jp-accent':'bg-gray-50 text-gray-400 border-transparent'}">${u}</button>`).join(''); }
+    function setCurrency(c) { acc.cur=c; document.getElementById('cur-twd').className=c==='TWD'?'px-3 h-full rounded-lg bg-white shadow-sm text-jp-text font-bold':'px-3 h-full rounded-lg text-gray-400 font-bold'; document.getElementById('cur-thb').className=c==='THB'?'px-3 h-full rounded-lg bg-white shadow-sm text-jp-text font-bold':'px-3 h-full rounded-lg text-gray-400 font-bold'; }
+    function updateFundDisplay() { 
+        const txt = `฿ ${state.fundBalance.toLocaleString()}`;
+        document.getElementById('acc-fund-display').innerText = txt; 
+        if(document.getElementById('home-fund-display')) document.getElementById('home-fund-display').innerText = txt; 
+    }
+    function submitTx() { const amt=parseFloat(document.getElementById('amt-input').value); if(!amt) return alert("輸入金額"); if(acc.payer==='公費包') state.fundBalance-=amt; state.transactions.unshift({id:Date.now(), date:new Date().toLocaleString(), amt, note:document.getElementById('note-input').value, payer:acc.payer, cat:acc.cat, cur:acc.cur}); saveData(); updateFundDisplay(); renderHistory(); document.getElementById('amt-input').value=''; alert("已記錄"); }
+    function renderHistory() { document.getElementById('tx-history').innerHTML = state.transactions.slice(0,10).map(t=>`<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border border-white"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold">${t.payer[0]}</div><div><p class="text-sm font-bold text-jp-text">${t.note||t.cat}</p><p class="text-[10px] text-gray-400">${t.date.split(' ')[0]}</p></div></div><span class="font-bold text-jp-text">- ${t.amt}</span></div>`).join(''); }
+    function editUsers() { const n=prompt("成員名單 (,分隔)", state.users.join(',')); if(n) { state.users=n.split(','); saveData(); renderPayers(); } }
+
+    function renderChecklist() { document.getElementById('checklist-container').innerHTML = state.checklist.map((c,i)=>`<div class="bg-white rounded-2xl p-5 shadow-card mb-4 border border-white"><h3 class="font-bold text-jp-text mb-3 flex justify-between">${c.title} <button onclick="state.checklist.splice(${i},1);saveData();renderChecklist()" class="text-gray-200 text-xs"><i class="fas fa-trash"></i></button></h3><div class="space-y-2">${c.items.map((m,j)=>`<label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition"><input type="checkbox" ${m.checked?'checked':''} onchange="state.checklist[${i}].items[${j}].checked=this.checked;saveData();renderChecklist()" class="w-5 h-5 rounded-md accent-jp-green"><span class="text-sm ${m.checked?'line-through text-gray-300':'text-gray-600'}">${m.name}</span></label>`).join('')}</div><button onclick="const n=prompt('新增項目');if(n){state.checklist[${i}].items.push({name:n,checked:false});saveData();renderChecklist()}" class="w-full mt-3 py-2 text-xs font-bold text-gray-400 bg-gray-50 rounded-xl hover:bg-gray-100">+ Add Item</button></div>`).join('');
+    const total = state.checklist.reduce((acc, c) => acc + c.items.length, 0);
+    const done = state.checklist.reduce((acc, c) => acc + c.items.filter(i=>i.checked).length, 0);
+    document.getElementById('home-check-progress').innerText = `${total===0?0:Math.round((done/total)*100)}% Ready`;
+    }
+    function addChecklistCategory() { state.checklist.push({title:'New List', items:[]}); saveData(); renderChecklist(); }
+    function addChecklistItem() { if(state.checklist.length>0) { const n=prompt("項目"); if(n){state.checklist[0].items.push({name:n,checked:false});saveData();renderChecklist();} } }
+    
+    function exportData() { navigator.clipboard.writeText(JSON.stringify(state)); alert("代碼已複製"); }
+    function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
+    
+    function renderAll() { renderItinerary(); renderAccCats(); renderPayers(); updateFundDisplay(); renderHistory(); renderChecklist(); }
+
+</script>
+</body>
+</html>
