@@ -112,7 +112,13 @@
         <div class="mb-5">
             <h3 class="text-xs font-bold text-gray-400 mb-2 uppercase ml-1">Hourly Forecast</h3>
             <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-50 flex gap-4 overflow-x-auto hide-scrollbar weather-scroll" id="weather-strip">
-                </div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">Now</span><br><i class="fas fa-sun text-yellow-400 my-1"></i><br><span class="text-xs font-bold">30°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">14:00</span><br><i class="fas fa-cloud-sun text-yellow-400 my-1"></i><br><span class="text-xs font-bold">31°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">15:00</span><br><i class="fas fa-cloud text-gray-300 my-1"></i><br><span class="text-xs font-bold">30°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">16:00</span><br><i class="fas fa-cloud-rain text-blue-400 my-1"></i><br><span class="text-xs font-bold">29°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">17:00</span><br><i class="fas fa-cloud-showers-heavy text-blue-500 my-1"></i><br><span class="text-xs font-bold">28°</span></div>
+                <div class="flex-shrink-0 text-center min-w-[50px]"><span class="text-[10px] text-gray-400">18:00</span><br><i class="fas fa-moon text-gray-400 my-1"></i><br><span class="text-xs font-bold">27°</span></div>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-6">
@@ -402,7 +408,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
 
-    // --- V25: UPDATED ITINERARY (Day 2 & Day 3 Overhaul) ---
+    // --- V26: FINAL UPDATED ITINERARY (Forced Update) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄出發", "thai_name": "สนามบิน", "desc": "FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -410,7 +416,7 @@
             { "time": "Late", "name": "唐人街宵夜", "thai_name": "เยาวราช", "desc": "Check-in 後覓食", "icon": "fa-utensils", "color": "text-orange-500", "keyword": "曼谷唐人街美食", "deep_desc": "曼谷唐人街 (耀華力路) 是全球最古老的唐人街之一。這裡晚上的霓虹燈招牌有種 80 年代香港電影的氛圍。必吃推薦：T&K 海鮮（綠色制服）、粿汁（Kway Chap）。" }, 
             { "time": "Sleep", "name": "B2 唐人街飯店", "thai_name": "โรงแรมบีทู", "desc": "入住休息", "link": "https://maps.app.goo.gl/ZjNM4vwDCNQdAq637?g_st=ipc", "keyword": "", "icon": "fa-bed", "color": "text-gray-500", "deep_desc": "B2 是泰國知名的平價連鎖飯店，主打工業風設計。唐人街分店位置極佳，走路就能到 MRT Wat Mangkon 站，且周邊充滿老曼谷的生活氣息。" } 
         ] },
-        { "day": 2, "date": "12/24 (三)", "desc": "古蹟 & 平安夜", "spots": [ 
+        { "day": 2, "date": "12/24 (三)", "desc": "平安夜特企", "spots": [ 
             { "time": "09:00", "name": "臥佛寺", "thai_name": "วัดโพธิ์", "desc": "必拍古蹟", "link": "https://www.google.com/maps/place/Bangkok5", "keyword": "臥佛寺", "icon": "fa-gopuram", "color": "text-gray-500", "deep_desc": "擁有全泰國最大的臥佛像 (長46公尺)。這裡也是泰式按摩的發源地，逛累了可以直接在寺內的按摩學校體驗最正宗的古法按摩。" }, 
             { "time": "11:00", "name": "鄭王廟", "thai_name": "วัดอรุณ", "desc": "拍照參觀", "link": "https://maps.app.goo.gl/4t2JkPEY1yKKBtoq5?g_st=ipc", "keyword": "鄭王廟", "icon": "fa-store", "color": "text-gray-500", "deep_desc": "又稱黎明寺 (Wat Arun)。不同於泰國常見的金碧輝煌，這裡以白色為底，鑲嵌著無數中國運來的彩色碎瓷片。日落時分的剪影被譽為曼谷最美景色之一。" }, 
             { "time": "13:00", "name": "王朗市場", "thai_name": "ตลาดวังหลัง", "desc": "在地小吃", "link": "https://maps.app.goo.gl/Q43nUqg7KE9dRj8Z9?g_st=ipc", "keyword": "王朗市場", "icon": "fa-map-marker-alt", "color": "text-gray-500", "deep_desc": "Wang Lang Market 是當地大學生和護士最愛的市場，觀光客較少，價格非常親民！必買：炸麵包 (Wang Lang Bakery)、泰式甜點、烤肉串。" },
@@ -686,15 +692,15 @@
 
     // --- UTILS ---
     function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');}); document.querySelector(`.nav-btn[data-target="${id}"]`).classList.add('active'); }
-    function saveData() { localStorage.setItem('bkk_2025_v25', JSON.stringify(state)); } // Updated Key V25
+    function saveData() { localStorage.setItem('bkk_2025_v26_final', JSON.stringify(state)); } // Updated Key V26 Final
     function loadData() { 
-        const d = localStorage.getItem('bkk_2025_v25');
+        const d = localStorage.getItem('bkk_2025_v26_final');
         if(d) {
             const loaded = JSON.parse(d);
             state = { ...loaded, itinerary: DEFAULT_ITINERARY };
         }
     }
-    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v25'); location.reload(); } }
+    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v26_final'); location.reload(); } }
 
     // Cloud & Account Logic
     async function autoSync() { const h=document.getElementById('header-status'); if(h) h.innerText='Syncing...'; try { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && Object.keys(d).length > 0) { state = {...state, ...d}; saveData(); renderAll(); } h.innerText='曼谷市'; } catch(e){ h.innerText='Offline'; } }
