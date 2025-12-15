@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2025 曼谷聖誕跨年 - 泰廢了</title>
+    <title>2025 曼谷聖誕跨年 - 泰廢了 (V27)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -408,7 +408,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
 
-    // --- V26: FINAL UPDATED ITINERARY (Forced Update) ---
+    // --- V27: FINAL UPDATED ITINERARY (Forced Update) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄出發", "thai_name": "สนามบิน", "desc": "FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -692,15 +692,16 @@
 
     // --- UTILS ---
     function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');}); document.querySelector(`.nav-btn[data-target="${id}"]`).classList.add('active'); }
-    function saveData() { localStorage.setItem('bkk_2025_v26_final', JSON.stringify(state)); } // Updated Key V26 Final
+    function saveData() { localStorage.setItem('bkk_2025_v27_super_force', JSON.stringify(state)); } // Updated Key V27 Super Force
     function loadData() { 
-        const d = localStorage.getItem('bkk_2025_v26_final');
+        const d = localStorage.getItem('bkk_2025_v27_super_force');
         if(d) {
             const loaded = JSON.parse(d);
+            // Overwrite itinerary from DEFAULT_ITINERARY to ensure updates are seen
             state = { ...loaded, itinerary: DEFAULT_ITINERARY };
         }
     }
-    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v26_final'); location.reload(); } }
+    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v27_super_force'); location.reload(); } }
 
     // Cloud & Account Logic
     async function autoSync() { const h=document.getElementById('header-status'); if(h) h.innerText='Syncing...'; try { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && Object.keys(d).length > 0) { state = {...state, ...d}; saveData(); renderAll(); } h.innerText='曼谷市'; } catch(e){ h.innerText='Offline'; } }
