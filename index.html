@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>2025 曼谷聖誕跨年 - 泰廢了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -16,10 +16,12 @@
                     colors: {
                         'jp-bg': '#F9F8F4',
                         'jp-text': '#4A4A4A',
-                        'jp-accent': '#C6A568', // 金色
+                        'jp-accent': '#C6A568',
                         'jp-blue': '#6B8EAD',
                         'jp-green': '#8DA399',
                         'jp-red': '#D67D7D',
+                        'mag-paper': '#FFFBF0',
+                        'wallet-blue': '#3B82F6', // 圖片中的藍色
                     },
                     fontFamily: {
                         sans: ['"Zen Kaku Gothic New"', '"Noto Sans TC"', 'sans-serif'],
@@ -27,7 +29,7 @@
                     boxShadow: {
                         'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
                         'gold': '0 4px 15px rgba(198, 165, 104, 0.15)',
-                        'card': '0 8px 24px rgba(0, 0, 0, 0.06)', // 新增卡片陰影
+                        'card': '0 8px 24px rgba(0, 0, 0, 0.06)',
                     }
                 }
             }
@@ -112,15 +114,28 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 shadow-soft mb-6">
-            <h3 class="text-sm font-bold text-jp-text mb-2">求生泰語翻譯</h3>
-            <div class="flex gap-2">
-                <input type="text" id="thai-input" placeholder="輸入中文 (例: 不要香菜)" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-jp-accent">
-                <button onclick="translateThai()" class="w-10 h-10 bg-jp-green/10 rounded-lg flex items-center justify-center text-jp-green active:scale-95 transition">
-                    <i class="fas fa-volume-up"></i>
-                </button>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-[24px] p-5 shadow-soft flex flex-col justify-center h-32 relative overflow-hidden">
+                <p class="text-xs text-gray-400 font-bold mb-1">匯率 (TWD/THB)</p>
+                <p class="text-[40px] font-bold text-jp-text tracking-tighter leading-none mt-1" id="home-rate-display">0.99</p>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2 text-right">點擊喇叭開啟 Google 翻譯發音</p>
+            <div class="bg-white rounded-[24px] p-5 shadow-soft flex flex-col justify-center h-32 cursor-pointer active:scale-95 transition" onclick="switchTab('tab-account')">
+                <p class="text-xs text-gray-400 font-bold mb-1">公費錢包</p>
+                <p class="text-[40px] font-bold text-wallet-blue tracking-tighter leading-none mt-1 truncate" id="home-fund-display">฿0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[24px] p-4 shadow-soft mb-6 flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500 flex-shrink-0">
+                <i class="fas fa-language text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-[10px] text-gray-400 font-bold mb-1">求生泰語 (輸入中文)</p>
+                <input type="text" id="thai-input" placeholder="不要香菜..." class="w-full text-lg font-bold text-gray-700 placeholder-gray-200 outline-none">
+            </div>
+            <button onclick="translateThai()" class="text-purple-500 font-bold text-sm px-2">
+                翻譯
+            </button>
         </div>
 
         <h3 class="text-sm font-bold text-gray-400 mb-3 ml-1 uppercase tracking-wider">Quick Access</h3>
@@ -137,11 +152,10 @@
             <button onclick="switchTab('tab-account')" class="bg-white p-4 rounded-xl shadow-soft text-left flex flex-col justify-between h-24 border border-jp-accent/20 active:scale-95 transition">
                 <div class="flex justify-between">
                     <i class="fas fa-calculator text-jp-red text-xl"></i>
-                    <span class="text-[10px] bg-gray-100 px-1 rounded text-gray-500" id="dash-fund">公費: $0</span>
                 </div>
                 <div>
-                    <span class="text-sm font-bold block text-jp-text">智慧記帳</span>
-                    <span class="text-xs text-gray-400">點擊記帳</span>
+                    <span class="text-sm font-bold block text-jp-text">記帳</span>
+                    <span class="text-xs text-gray-400">快速紀錄</span>
                 </div>
             </button>
 
@@ -386,8 +400,8 @@
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYeyHua8VRjHu3dHbP3glwWcFf5zClFG_drBD9gR_j9MZpcGf6uajQUzmOw_Au_o0o/exec';
-    
-    // --- UPDATED DATA WITH DEEP DESCRIPTIONS & THAI NAMES (V21) ---
+
+    // --- FULL DATASET WITH YOUR NEW INPUTS (V22) ---
     const DEFAULT_ITINERARY = [
         { "day": 1, "date": "12/23 (二)", "desc": "抵達曼谷", "spots": [ 
             { "time": "18:00", "name": "高雄出發", "thai_name": "สนามบิน", "desc": "FD235 ✈️ (21:30 抵達廊曼)", "icon": "fa-plane", "color": "text-blue-500", "deep_desc": "廊曼機場 (DMK) 是曼谷的舊機場，規模較小但通關通常比素萬那普 (BKK) 快。出關後請留意「Taxi」指標，或使用 Grab App 叫車 (建議選擇 1 樓外的接送點)。" }, 
@@ -414,10 +428,13 @@
             { "time": "10:00", "name": "美功鐵道市場", "thai_name": "ตลาดร่มหุบ", "desc": "看火車進站", "link": "https://maps.app.goo.gl/4f6eR12QvvsLoArb7?g_st=ipc", "keyword": "美功鐵道市場", "icon": "fa-train", "color": "text-gray-500", "deep_desc": "這裡被稱為「世界上最危險的市場」。每天有 8 班火車經過，攤販會在火車鳴笛瞬間，熟練地收起遮陽棚與籃子，火車一過又瞬間恢復原狀，是泰國獨有的奇景。" }, 
             { "time": "12:00", "name": "丹嫩莎水上市場", "thai_name": "ดำเนินสะดวก", "desc": "手搖船體驗", "link": "https://maps.app.goo.gl/n4JDTNY2q7Bqkrxw8?g_st=ipc", "keyword": "丹嫩莎朵", "icon": "fa-water", "color": "text-gray-500", "deep_desc": "这是 007 電影《金槍人》的拍攝場景。雖然商業化程度高，但卻是體驗「手搖船」塞船的最佳地點。記得：船上的東西通常比岸上貴，殺價要從 3 折開始殺！" }, 
             { "time": "14:00", "name": "樹中廟", "thai_name": "วัดบางกุ้ง", "desc": "靈驗古廟", "link": "https://maps.app.goo.gl/z8xrK7NTUiyW4P6n8?g_st=ipc", "keyword": "樹中廟", "icon": "fa-vihara", "color": "text-gray-500", "deep_desc": "這是一座被菩提樹根完全包覆的佛殿，已有 400 多年歷史。相傳鄭王在攻打緬甸軍之前曾來此祈求勝利，結果大勝，因此被視為極其靈驗的求勝之廟。" }, 
-            { "time": "16:00", "name": "返回曼谷", "desc": "回飯店或按摩", "icon": "fa-home", "color": "text-gray-500", "deep_desc": "回程通常會遇到曼谷著名的下班尖峰車潮，這段時間可以在車上補眠，或討論晚餐吃什麼。" } 
+            { "time": "16:00", "name": "返回曼谷", "desc": "Siam / Big C 或 飯店", "icon": "fa-home", "color": "text-gray-500", "deep_desc": "回程通常會遇到曼谷著名的下班尖峰車潮，這段時間可以在車上補眠，或討論晚餐吃什麼。" } 
         ] },
         { "day": 5, "date": "12/27 (六)", "desc": "返台 / 自由", "spots": [ 
             { "time": "10:00", "name": "恰圖恰市集", "thai_name": "ตลาดนัดจตุจักร", "desc": "最後採買", "link": "https://maps.app.goo.gl/T9QymcxerpaBbFGc7?g_st=ipc", "keyword": "恰圖恰市集", "icon": "fa-smile", "color": "text-gray-500", "deep_desc": "Chatuchak 是世界最大的週末市集，擁有一萬五千個攤位。分區複雜，建議看到喜歡的就買，因為回頭很難再找到同一家店！這裡也是買香氛、手工藝品和紀念品的最佳地點。" }, 
+            { "time": "12:00", "name": "午餐自理", "desc": "市集內或周邊", "icon": "fa-utensils", "color": "text-gray-500", "deep_desc": "恰圖恰內有非常多小吃攤，如椰子冰淇淋、西班牙燉飯 (Viva 8)。" },
+            { "time": "15:00", "name": "Big C 採購", "thai_name": "บิ๊กซี", "desc": "伴手禮掃貨", "icon": "fa-shopping-cart", "color": "text-green-500", "deep_desc": "推薦買：手標泰式茶包、大哥豆、Pocky 芒果口味、Bento 魷魚片。" },
+            { "time": "19:00", "name": "晚餐: Krua Khun Puk", "thai_name": "ครัวคุณปุ๊ก", "desc": "泰式熱炒", "link": "https://www.google.com/maps/place/Bangkok4", "icon": "fa-fire", "color": "text-orange-500", "deep_desc": "位於 Nana 站附近的平價人氣熱炒店。營業到很晚，必點：炒含羞草、冬蔭功、烤豬頸肉。" },
             { "time": "Flight", "name": "前往機場", "thai_name": "สนามบิน", "desc": "預備返台", "icon": "fa-plane-departure", "color": "text-blue-500", "deep_desc": "若有在百貨公司申請退稅 (VAT Refund)，記得先在機場大廳的退稅辦公室蓋章，過了海關後再去領錢喔！" } 
         ] }
     ];
@@ -431,7 +448,6 @@
         itinerary: DEFAULT_ITINERARY, 
         currentDay: 0
     };
-    
     let sortable = null;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -483,8 +499,8 @@
             const res = await fetch('https://api.exchangerate-api.com/v4/latest/THB');
             const data = await res.json();
             const rate = data.rates.TWD; 
-            document.getElementById('dash-rate').innerText = rate.toFixed(2);
-        } catch { document.getElementById('dash-rate').innerText = "0.92"; }
+            document.getElementById('home-rate-display').innerText = rate.toFixed(2);
+        } catch { document.getElementById('home-rate-display').innerText = "0.99"; }
     }
 
     function translateThai() {
@@ -597,7 +613,6 @@
                 <i class="fas fa-bars text-gray-300 cursor-move p-2"></i>
             </div>
         `).join('');
-        
         const modal = document.getElementById('sort-modal');
         modal.classList.add('open');
         
@@ -623,7 +638,6 @@
         const isNew = index === -1;
         document.getElementById('spot-modal-title').innerText = isNew ? "新增行程" : "修改行程";
         document.getElementById('btn-delete-spot').style.display = isNew ? 'none' : 'block';
-        
         if (isNew) {
             fields.forEach(f => { const el = document.getElementById('spot-'+f); if(el) el.value = (f==='icon'?'fa-map-marker-alt':''); });
         } else {
@@ -659,9 +673,15 @@
 
     // --- UTILS ---
     function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');}); document.querySelector(`.nav-btn[data-target="${id}"]`).classList.add('active'); }
-    function saveData() { localStorage.setItem('bkk_2025_v21', JSON.stringify(state)); } // Updated Key V21
-    function loadData() { const d = localStorage.getItem('bkk_2025_v21'); if(d) try { state = {...state, ...JSON.parse(d)}; } catch(e) {} }
-    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v21'); location.reload(); } }
+    function saveData() { localStorage.setItem('bkk_2025_v23', JSON.stringify(state)); } // Updated Key V23
+    function loadData() { 
+        const d = localStorage.getItem('bkk_2025_v23');
+        if(d) {
+            const loaded = JSON.parse(d);
+            state = { ...loaded, itinerary: DEFAULT_ITINERARY };
+        }
+    }
+    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v23'); location.reload(); } }
 
     // Cloud & Account Logic
     async function autoSync() { const h=document.getElementById('header-status'); if(h) h.innerText='Syncing...'; try { const res = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); const d = await res.json(); if(d && Object.keys(d).length > 0) { state = {...state, ...d}; saveData(); renderAll(); } h.innerText='曼谷市'; } catch(e){ h.innerText='Offline'; } }
@@ -677,15 +697,19 @@
     function renderAccCats() { const cats=[{n:'餐飲',i:'fa-utensils'},{n:'交通',i:'fa-car'},{n:'購物',i:'fa-shopping-bag'},{n:'住宿',i:'fa-bed'},{n:'其他',i:'fa-ellipsis-h'}]; document.getElementById('cat-container').innerHTML = cats.map((c,i)=>`<button onclick="acc.cat='${c.n}';renderAccCats();" class="flex-shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border transition ${acc.cat===c.n?'bg-jp-text text-white border-jp-text shadow-lg':'bg-white text-gray-400 border-gray-100'}"><i class="fas ${c.i} mb-1"></i><span class="text-xs font-bold">${c.n}</span></button>`).join(''); }
     function renderPayers() { document.getElementById('payer-container').innerHTML = state.users.map(u=>`<button onclick="acc.payer='${u}';renderPayers();" class="px-4 py-2 rounded-xl text-xs font-bold border transition ${acc.payer===u?'bg-jp-accent text-white border-jp-accent':'bg-gray-50 text-gray-400 border-transparent'}">${u}</button>`).join(''); }
     function setCurrency(c) { acc.cur=c; document.getElementById('cur-twd').className=c==='TWD'?'px-3 h-full rounded-lg bg-white shadow-sm text-jp-text font-bold':'px-3 h-full rounded-lg text-gray-400 font-bold'; document.getElementById('cur-thb').className=c==='THB'?'px-3 h-full rounded-lg bg-white shadow-sm text-jp-text font-bold':'px-3 h-full rounded-lg text-gray-400 font-bold'; }
-    function updateFundDisplay() { document.getElementById('acc-fund-display').innerText = `฿ ${state.fundBalance}`; document.getElementById('home-fund-display').innerText = `฿ ${state.fundBalance}`; }
+    function updateFundDisplay() { 
+        const txt = `฿ ${state.fundBalance.toLocaleString()}`;
+        document.getElementById('acc-fund-display').innerText = txt; 
+        if(document.getElementById('home-fund-display')) document.getElementById('home-fund-display').innerText = txt; 
+    }
     function submitTx() { const amt=parseFloat(document.getElementById('amt-input').value); if(!amt) return alert("輸入金額"); if(acc.payer==='公費包') state.fundBalance-=amt; state.transactions.unshift({id:Date.now(), date:new Date().toLocaleString(), amt, note:document.getElementById('note-input').value, payer:acc.payer, cat:acc.cat, cur:acc.cur}); saveData(); updateFundDisplay(); renderHistory(); document.getElementById('amt-input').value=''; alert("已記錄"); }
     function renderHistory() { document.getElementById('tx-history').innerHTML = state.transactions.slice(0,10).map(t=>`<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border border-white"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold">${t.payer[0]}</div><div><p class="text-sm font-bold text-jp-text">${t.note||t.cat}</p><p class="text-[10px] text-gray-400">${t.date.split(' ')[0]}</p></div></div><span class="font-bold text-jp-text">- ${t.amt}</span></div>`).join(''); }
     function editUsers() { const n=prompt("成員名單 (,分隔)", state.users.join(',')); if(n) { state.users=n.split(','); saveData(); renderPayers(); } }
 
-    function renderChecklist() { document.getElementById('checklist-container').innerHTML = state.checklist.map((c,i)=>`<div class="bg-white rounded-2xl p-5 shadow-card mb-4 border border-white"><h3 class="font-bold text-jp-text mb-3 flex justify-between">${c.title} <button onclick="state.checklist.splice(${i},1);saveData();renderChecklist()" class="text-gray-200 text-xs"><i class="fas fa-trash"></i></button></h3><div class="space-y-2">${c.items.map((m,j)=>`<label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition"><input type="checkbox" ${m.checked?'checked':''} onchange="state.checklist[${i}].items[${j}].checked=this.checked;saveData();renderChecklist()" class="w-5 h-5 rounded-md accent-jp-green"><span class="text-sm ${m.checked?'line-through text-gray-300':'text-gray-600'}">${m.name}</span></label>`).join('')}</div><button onclick="const n=prompt('新增項目');if(n){state.checklist[${i}].items.push({name:n,checked:false});saveData();renderChecklist()}" class="w-full mt-3 py-2 text-xs font-bold text-gray-400 bg-gray-50 rounded-xl hover:bg-gray-100">+ Add Item</button></div>`).join(''); 
-        const total = state.checklist.reduce((acc, c) => acc + c.items.length, 0);
-        const done = state.checklist.reduce((acc, c) => acc + c.items.filter(i=>i.checked).length, 0);
-        document.getElementById('home-check-progress').innerText = `${total===0?0:Math.round((done/total)*100)}% Ready`;
+    function renderChecklist() { document.getElementById('checklist-container').innerHTML = state.checklist.map((c,i)=>`<div class="bg-white rounded-2xl p-5 shadow-card mb-4 border border-white"><h3 class="font-bold text-jp-text mb-3 flex justify-between">${c.title} <button onclick="state.checklist.splice(${i},1);saveData();renderChecklist()" class="text-gray-200 text-xs"><i class="fas fa-trash"></i></button></h3><div class="space-y-2">${c.items.map((m,j)=>`<label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition"><input type="checkbox" ${m.checked?'checked':''} onchange="state.checklist[${i}].items[${j}].checked=this.checked;saveData();renderChecklist()" class="w-5 h-5 rounded-md accent-jp-green"><span class="text-sm ${m.checked?'line-through text-gray-300':'text-gray-600'}">${m.name}</span></label>`).join('')}</div><button onclick="const n=prompt('新增項目');if(n){state.checklist[${i}].items.push({name:n,checked:false});saveData();renderChecklist()}" class="w-full mt-3 py-2 text-xs font-bold text-gray-400 bg-gray-50 rounded-xl hover:bg-gray-100">+ Add Item</button></div>`).join('');
+    const total = state.checklist.reduce((acc, c) => acc + c.items.length, 0);
+    const done = state.checklist.reduce((acc, c) => acc + c.items.filter(i=>i.checked).length, 0);
+    document.getElementById('home-check-progress').innerText = `${total===0?0:Math.round((done/total)*100)}% Ready`;
     }
     function addChecklistCategory() { state.checklist.push({title:'New List', items:[]}); saveData(); renderChecklist(); }
     function addChecklistItem() { if(state.checklist.length>0) { const n=prompt("項目"); if(n){state.checklist[0].items.push({name:n,checked:false});saveData();renderChecklist();} } }
@@ -694,7 +718,6 @@
     function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function confirmImport() { try { state = JSON.parse(document.getElementById('import-area').value); saveData(); location.reload(); } catch { alert("格式錯誤"); } }
-    function hardReset() { if(confirm("確定重置所有資料?")) { localStorage.removeItem('bkk_2025_v21'); location.reload(); } }
     
     function renderAll() { renderItinerary(); renderAccCats(); renderPayers(); updateFundDisplay(); renderHistory(); renderChecklist(); }
 
